@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 9d53a816fbe917c4c950c530c8c5bdb7
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Futura Round Light
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 2d8f276c8d81a7740accd6d7b51b94c3, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
