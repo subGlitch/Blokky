@@ -9,12 +9,15 @@ public class Spawner : MonoBehaviour
 {
 	void Start()
 	{
-		Vector2Int gridSize			= new Vector2Int( 17, 17 );
+		Vector2Int gridSize		= new Vector2Int( 17, 17 );
 
 
-		Vector2 gridWorldSize		= CalcGridWorldSize( gridSize );
-		float blockWidth			= gridWorldSize.x / gridSize.x;
-		float blockScale			= blockWidth;
+		Vector2 gridSize_w		= CalcGridWorldSize( gridSize );
+		Vector2 gridCenter_w	= Vector2.zero;
+		Vector2 gridMin_w		= gridCenter_w - gridSize_w / 2;
+
+		float blockSize			= gridSize_w.x / gridSize.x;
+		float blockScale		= blockSize;
 
 		int count							= gridSize.x * gridSize.y;
         EntityManager entityManager			= World.DefaultGameObjectInjectionWorld.EntityManager;
@@ -24,9 +27,15 @@ public class Spawner : MonoBehaviour
 		for (int x = 0; x < gridSize.x; x ++)
 		{
 			Entity entity		= nativeArray[ y * gridSize.x + x ];
+			float3 posMin		= new float3(
+												gridMin_w.x + x * blockSize,
+												gridMin_w.y + y * blockSize,
+												0
+			);
+			float3 posCenter	= posMin + blockSize / 2;
 
-			entityManager.SetComponentData( entity, new Translation { Value = new float3( x, y, 0 ) } );
-			entityManager.AddComponentData( entity, new NonUniformScale { Value = new float3( blockScale, blockScale, blockScale ) } );
+			entityManager.SetComponentData( entity, new Translation { Value = posCenter } );
+			entityManager.AddComponentData( entity, new NonUniformScale { Value = blockScale } );
 			entityManager.AddComponentData( entity, new GridPositionComponent( x, y ) );
 		}
 
