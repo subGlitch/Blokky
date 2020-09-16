@@ -1,6 +1,7 @@
 ﻿using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -35,7 +36,7 @@ public class Spawner : MonoBehaviour
 			float3 posCenter	= posMin + blockSize / 2;
 
 			entityManager.SetComponentData( entity, new Translation { Value = posCenter } );
-			entityManager.AddComponentData( entity, new NonUniformScale { Value = blockScale } );
+			entityManager.AddComponentData( entity, new Scale { Value = blockScale } );
 			entityManager.AddComponentData( entity, new GridPositionComponent( x, y ) );
 		}
 
