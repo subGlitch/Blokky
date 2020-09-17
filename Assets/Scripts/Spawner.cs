@@ -25,11 +25,12 @@ public class Spawner : MonoBehaviour
 
 	void Start()
 	{
-		Vector2Int gridSize		= new Vector2Int( 2, 2 );
+		Vector2Int gridSize		= new Vector2Int( 5, 5 );
 
 		SetGridSize( gridSize );
 
-		CreateBlock( gridSize, Vector2.zero );
+		CreateBlock( gridSize, Vector2.zero, true );
+		CreateBlock( gridSize, Vector2.one, false );
 	}
 
 
@@ -42,22 +43,23 @@ public class Spawner : MonoBehaviour
 	}
 
 
-	void CreateBlock( Vector2Int size, Vector2 posCenter_w )
+	void CreateBlock( Vector2Int size, Vector2 posCenter_w, bool isDraggable )
 	{
 		CreateBlockLegos( size, posCenter_w, out var legos );
 
-		CreateBlockParent( size, legos );
+		CreateBlockParent( size, legos, isDraggable );
 
 		legos.Dispose();		
 	}
 
 
-	void CreateBlockParent( Vector2Int size, NativeArray< Entity > legos )
+	void CreateBlockParent( Vector2Int size, NativeArray< Entity > legos, bool isDraggable )
 	{
         EntityManager entityManager			= World.DefaultGameObjectInjectionWorld.EntityManager;
 		Entity block						= entityManager.CreateEntity();
 
-		entityManager.AddComponent< Draggable >( block );
+		if (isDraggable)
+			entityManager.AddComponent< Draggable >( block );
 
 		DynamicBuffer< Cell > cells			= entityManager.AddBuffer< Cell >( block );
 
