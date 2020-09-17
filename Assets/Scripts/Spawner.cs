@@ -29,8 +29,8 @@ public class Spawner : MonoBehaviour
 
 		SetGridSize( gridSize );
 
-		CreateBlock( gridSize, Vector2.zero, true );
-		CreateBlock( gridSize, Vector2.one, false );
+		CreateBlock( gridSize, Vector2.zero, false );
+		CreateBlock( new Vector2Int( 3, 2 ), Vector2.one, true );
 	}
 
 
@@ -45,7 +45,9 @@ public class Spawner : MonoBehaviour
 
 	void CreateBlock( Vector2Int size, Vector2 posCenter_w, bool isDraggable )
 	{
-		CreateBlockLegos( size, posCenter_w, out var legos, out RenderMesh renderMesh );
+		int layer		= isDraggable ? 1 : 0;
+
+		CreateBlockLegos( size, posCenter_w, layer, out var legos, out RenderMesh renderMesh );
 
 		CreateBlockParent( size, legos, renderMesh, isDraggable );
 
@@ -80,6 +82,7 @@ public class Spawner : MonoBehaviour
 	void CreateBlockLegos(
 			Vector2Int					blockSize,
 			Vector2						blockCenter_w,
+			int							layer,
 			out NativeArray< Entity >	legos,
 			out RenderMesh				renderMesh
 		)
@@ -94,6 +97,7 @@ public class Spawner : MonoBehaviour
 		material							= new Material( refMaterial );
 		renderMesh.material					= material;
 		renderMesh.mesh						= refMesh;
+		renderMesh.layer					= layer;			// Looks like this is ignored by Unity - https://forum.unity.com/threads/rendermesh-layer.661633/
 
 		// Get RenderMesh copy
 		RenderMesh renderMeshCopy			= renderMesh;		// Cannot use 'out' parameter inside lambda
@@ -106,9 +110,10 @@ public class Spawner : MonoBehaviour
 		ForEach( legos, blockSize, (entity, x, y) =>
 		{
 			Vector2 posMin					= blockMin_w + new Vector2( x, y ) * _legoSize;
-			Vector2 posCenter				= posMin + Vector2.one * _legoSize / 2;
+			Vector3 posCenter				= posMin + Vector2.one * _legoSize / 2;
+			posCenter.z						= layer * (-1);
 
-			entityManager.SetComponentData( entity, new Translation { Value = (Vector3)posCenter } );
+			entityManager.SetComponentData( entity, new Translation { Value = posCenter } );
 			entityManager.AddComponentData( entity, new Scale { Value = _legoScale } );
 			entityManager.AddComponentData( entity, new GridPosition( x, y ) );
 			entityManager.SetSharedComponentData( entity, renderMeshCopy );
