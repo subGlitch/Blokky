@@ -98,8 +98,11 @@ public class Spawner : MonoBehaviour
 			entityManager.AddComponentData( lego, new Parent{ Value = parent } );
 			entityManager.AddComponentData( lego, new LocalToParent() );
 
-			entityManager.SetComponentData( lego, new Translation { Value = new float3( x, y, 0 ) } );
-			entityManager.AddComponentData( lego, new GridPosition( x, y ) );
+			int2 gridPos					= new int2( x, y );
+			float3 localBlockMin			= (float3)(Vector3)(Vector2)blockSize / -2;
+			float3 localPos					= localBlockMin + new float3( x, y, 0 ) + (float3).5f;
+			entityManager.AddComponentData( lego, new GridPosition( gridPos ) );
+			entityManager.SetComponentData( lego, new Translation { Value = localPos } );
 
 			entityManager.SetSharedComponentData( lego, renderMesh );
 		});
