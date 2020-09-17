@@ -57,6 +57,7 @@ public class Spawner : MonoBehaviour
 	{
         EntityManager entityManager			= World.DefaultGameObjectInjectionWorld.EntityManager;
 		Entity block						= entityManager.CreateEntity();
+		entityManager.SetName( block, "Block" );
 
 		if (isDraggable)
 			entityManager.AddComponent< Draggable >( block );
