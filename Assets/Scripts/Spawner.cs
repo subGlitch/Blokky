@@ -45,15 +45,20 @@ public class Spawner : MonoBehaviour
 
 	void CreateBlock( Vector2Int size, Vector2 posCenter_w, bool isDraggable )
 	{
-		CreateBlockLegos( size, posCenter_w, out var legos );
+		CreateBlockLegos( size, posCenter_w, out var legos, out RenderMesh renderMesh );
 
-		CreateBlockParent( size, legos, isDraggable );
+		CreateBlockParent( size, legos, renderMesh, isDraggable );
 
 		legos.Dispose();		
 	}
 
 
-	void CreateBlockParent( Vector2Int size, NativeArray< Entity > legos, bool isDraggable )
+	void CreateBlockParent(
+			Vector2Int				size,
+			NativeArray< Entity >	legos,
+			RenderMesh				renderMesh,
+			bool					isDraggable
+		)
 	{
         EntityManager entityManager			= World.DefaultGameObjectInjectionWorld.EntityManager;
 		Entity block						= entityManager.CreateEntity();
@@ -61,6 +66,8 @@ public class Spawner : MonoBehaviour
 
 		if (isDraggable)
 			entityManager.AddComponent< Draggable >( block );
+
+		entityManager.AddSharedComponentData( block, renderMesh );
 
 		DynamicBuffer< Cell > cells			= entityManager.AddBuffer< Cell >( block );
 
@@ -70,20 +77,32 @@ public class Spawner : MonoBehaviour
 	}
 
 
-	void CreateBlockLegos( Vector2Int blockSize, Vector2 blockCenter_w, out NativeArray< Entity > legos )
+	void CreateBlockLegos(
+			Vector2Int					blockSize,
+			Vector2						blockCenter_w,
+			out NativeArray< Entity >	legos,
+			out RenderMesh				renderMesh
+		)
 	{
+		// Instantiate entity prefabs
 		int legosCount						= blockSize.x * blockSize.y;
         EntityManager entityManager			= World.DefaultGameObjectInjectionWorld.EntityManager;
 		legos								= entityManager.Instantiate( PrefabEntities.entityPrefab_Lego, legosCount, Allocator.Temp );
 
-		RenderMesh renderMesh				= new RenderMesh();
+		// Create RenderMesh
+		renderMesh							= new RenderMesh();
 		material							= new Material( refMaterial );
 		renderMesh.material					= material;
 		renderMesh.mesh						= refMesh;
 
+		// Get RenderMesh copy
+		RenderMesh renderMeshCopy			= renderMesh;		// Cannot use 'out' parameter inside lambda
+
+		// Calc
 		Vector2 blockSize_w					= (Vector2)blockSize * _legoSize;
 		Vector2 blockMin_w					= blockCenter_w - blockSize_w / 2;
 
+		// Set/Add components
 		ForEach( legos, blockSize, (entity, x, y) =>
 		{
 			Vector2 posMin					= blockMin_w + new Vector2( x, y ) * _legoSize;
@@ -92,7 +111,7 @@ public class Spawner : MonoBehaviour
 			entityManager.SetComponentData( entity, new Translation { Value = (Vector3)posCenter } );
 			entityManager.AddComponentData( entity, new Scale { Value = _legoScale } );
 			entityManager.AddComponentData( entity, new GridPosition( x, y ) );
-			entityManager.SetSharedComponentData( entity, renderMesh );
+			entityManager.SetSharedComponentData( entity, renderMeshCopy );
 		});
 	}
 

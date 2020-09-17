@@ -1,7 +1,9 @@
 ﻿using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 
 public class DragSystem : ComponentSystem
@@ -41,6 +43,10 @@ public class DragSystem : ComponentSystem
 
 				entityManager.SetComponentData( cell.entity, translation );
 			}
+
+
+			RenderMesh renderMesh			= entityManager.GetSharedComponentData< RenderMesh >( entity );
+			renderMesh.material.color		= Random.ColorHSV();
 		});
 	}
 }
