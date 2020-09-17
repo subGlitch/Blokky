@@ -3,6 +3,5 @@
 
 public struct DraggableComponent : IComponentData
 {
-	
 }
 
