@@ -35,7 +35,7 @@ public class Factory : MB_Singleton< Factory >
 		int layer							= isDraggable ? 1 : 0;
 		float3 position3D					= (Vector3)position + Vector3.back * layer;
 
-		// Create RenderMesh
+		// Create RenderMesh for legos
 		Material material					= new Material( legoMaterial ) { color = isDraggable ? Color.gray : Color.white };
 		renderMesh							= new RenderMesh { material = material, mesh = legoMesh };
 
@@ -84,7 +84,7 @@ public class Factory : MB_Singleton< Factory >
 	}
 
 
-	/// <summary> Helper method to iterate NativeArray representation of 2D grid </summary>
+	/// <summary> Helper method to iterate NativeArray representation of 2D array </summary>
 	void ForEach( NativeArray< Entity > nativeArray, Vector2Int blockSize, Action< Entity, int, int > action )
 	{
 		for (int y = 0; y < blockSize.y; y ++)
