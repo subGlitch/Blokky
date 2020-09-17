@@ -67,19 +67,6 @@ public class Spawner : MonoBehaviour
 	}
 
 
-	/// <summary> Helper method to iterate NativeArray representation of 2D grid </summary>
-	void ForEach( NativeArray< Entity > nativeArray, Vector2Int gridSize, Action< Entity, int, int > action )
-	{
-		for (int y = 0; y < gridSize.y; y ++)
-		for (int x = 0; x < gridSize.x; x ++)
-		{
-			Entity entity		= nativeArray[ y * gridSize.x + x ];
-			
-			action( entity, x, y );
-		}
-	}
-
-
 	Vector2 CalcGridWorldSize( Vector2Int gridSize )
 	{
 		Camera mainCamera			= Camera.main;
@@ -91,6 +78,19 @@ public class Spawner : MonoBehaviour
 		float girdWorldHeight		= girdWorldWidth * gridSize.y / gridSize.x;
 
 		return new Vector2( girdWorldWidth, girdWorldHeight );
+	}
+
+
+	/// <summary> Helper method to iterate NativeArray representation of 2D grid </summary>
+	void ForEach( NativeArray< Entity > nativeArray, Vector2Int gridSize, Action< Entity, int, int > action )
+	{
+		for (int y = 0; y < gridSize.y; y ++)
+		for (int x = 0; x < gridSize.x; x ++)
+		{
+			Entity entity		= nativeArray[ y * gridSize.x + x ];
+			
+			action( entity, x, y );
+		}
 	}
 }
 
