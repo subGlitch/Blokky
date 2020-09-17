@@ -7,15 +7,12 @@ using Unity.Transforms;
 using UnityEngine;
 
 
-public class Spawner : MonoBehaviour
+public class Factory : MonoBehaviour
 {
 #pragma warning disable 0649
 
-	[SerializeField] Material	material;
-
-	[Header( "Refs" )]
-	[SerializeField] Material	refMaterial;
-	[SerializeField] Mesh		refMesh;
+	[SerializeField] Material	legoMaterial;
+	[SerializeField] Mesh		legoMesh;
 
 #pragma warning restore 0649
 
@@ -50,8 +47,8 @@ public class Spawner : MonoBehaviour
 		float3 position3D					= (Vector3)position + Vector3.back * layer;
 
 		// Create RenderMesh
-		material							= new Material( refMaterial ) { color = isDraggable ? Color.gray : Color.white };
-		renderMesh							= new RenderMesh { material = material, mesh = refMesh };
+		Material material					= new Material( legoMaterial ) { color = isDraggable ? Color.gray : Color.white };
+		renderMesh							= new RenderMesh { material = material, mesh = legoMesh };
 
 		// Create entity
         EntityManager entityManager			= World.DefaultGameObjectInjectionWorld.EntityManager;
