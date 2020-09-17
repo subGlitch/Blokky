@@ -46,8 +46,9 @@ public class Spawner : MonoBehaviour
 	void CreateBlock( Vector2Int size, Vector2 posCenter_w, bool isDraggable )
 	{
 		int layer		= isDraggable ? 1 : 0;
+		Color color		= isDraggable ? Color.gray : Color.white;
 
-		CreateBlockLegos( size, posCenter_w, layer, out var legos, out RenderMesh renderMesh );
+		CreateBlockLegos( size, posCenter_w, layer, color, out var legos, out RenderMesh renderMesh );
 
 		CreateBlockParent( size, legos, renderMesh, isDraggable );
 
@@ -83,6 +84,7 @@ public class Spawner : MonoBehaviour
 			Vector2Int					blockSize,
 			Vector2						blockCenter_w,
 			int							layer,
+			Color						color,
 			out NativeArray< Entity >	legos,
 			out RenderMesh				renderMesh
 		)
@@ -92,9 +94,12 @@ public class Spawner : MonoBehaviour
         EntityManager entityManager			= World.DefaultGameObjectInjectionWorld.EntityManager;
 		legos								= entityManager.Instantiate( PrefabEntities.entityPrefab_Lego, legosCount, Allocator.Temp );
 
+		// Create material
+		material							= new Material( refMaterial );
+		material.color						= color;
+
 		// Create RenderMesh
 		renderMesh							= new RenderMesh();
-		material							= new Material( refMaterial );
 		renderMesh.material					= material;
 		renderMesh.mesh						= refMesh;
 		renderMesh.layer					= layer;			// Looks like this is ignored by Unity - https://forum.unity.com/threads/rendermesh-layer.661633/
