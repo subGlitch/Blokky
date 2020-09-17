@@ -44,18 +44,43 @@ public class Spawner : MonoBehaviour
 
 	void CreateBlock( Vector2Int blockSize, Vector2 blockCenter_w )
 	{
-		Vector2 blockSize_w					= (Vector2)blockSize * _blockSize;
-		Vector2 blockMin_w					= blockCenter_w - blockSize_w / 2;
+		CreateBlockLegos( blockSize, blockCenter_w, out var legos );
+
+		CreateBlockParent( blockSize, legos );
+
+		legos.Dispose();		
+	}
 
 
-		// Create Legos
+	void CreateBlockParent( Vector2Int blockSize, NativeArray< Entity > legos )
+	{
         EntityManager entityManager			= World.DefaultGameObjectInjectionWorld.EntityManager;
+		Entity block						= entityManager.CreateEntity();
+
+		entityManager.AddComponent< Draggable >( block );
+
+		DynamicBuffer< Cell > cells			= entityManager.AddBuffer< Cell >( block );
+
+		ForEach( legos, blockSize, (entity, x, y) =>
+			cells.Add( new Cell( entity ) )
+		);
+	}
+
+
+	void CreateBlockLegos( Vector2Int blockSize, Vector2 blockCenter_w, out NativeArray< Entity > legos )
+	{
 		int legosCount						= blockSize.x * blockSize.y;
-		NativeArray< Entity > legos			= entityManager.Instantiate( PrefabEntities.entityPrefab_Lego, legosCount, Allocator.Temp );
+        EntityManager entityManager			= World.DefaultGameObjectInjectionWorld.EntityManager;
+		legos								= entityManager.Instantiate( PrefabEntities.entityPrefab_Lego, legosCount, Allocator.Temp );
+
 		RenderMesh renderMesh				= new RenderMesh();
 		material							= new Material( refMaterial );
 		renderMesh.material					= material;
 		renderMesh.mesh						= refMesh;
+
+		Vector2 blockSize_w					= (Vector2)blockSize * _blockSize;
+		Vector2 blockMin_w					= blockCenter_w - blockSize_w / 2;
+
 		ForEach( legos, blockSize, (entity, x, y) =>
 		{
 			Vector2 posMin					= blockMin_w + new Vector2( x, y ) * _blockSize;
@@ -66,18 +91,6 @@ public class Spawner : MonoBehaviour
 			entityManager.AddComponentData( entity, new GridPosition( x, y ) );
 			entityManager.SetSharedComponentData( entity, renderMesh );
 		});
-
-
-		// Create Block
-		Entity block						= entityManager.CreateEntity();
-		entityManager.AddComponent< Draggable >( block );
-		DynamicBuffer< Cell > cells			= entityManager.AddBuffer< Cell >( block );
-		ForEach( legos, blockSize, (entity, x, y) =>
-			cells.Add( new Cell( entity ) )
-		);
-
-
-		legos.Dispose();		
 	}
 
 
