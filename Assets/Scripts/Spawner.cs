@@ -1,4 +1,5 @@
-﻿using Unity.Collections;
+﻿using System;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Rendering;
 using Unity.Transforms;
@@ -32,7 +33,7 @@ public class Spawner : MonoBehaviour
 
 		int count							= gridSize.x * gridSize.y;
         EntityManager entityManager			= World.DefaultGameObjectInjectionWorld.EntityManager;
-		var nativeArray						= entityManager.Instantiate( PrefabEntities.entityPrefab_Block, count, Allocator.Temp );
+		NativeArray< Entity > nativeArray	= entityManager.Instantiate( PrefabEntities.entityPrefab_Block, count, Allocator.Temp );
 
 		RenderMesh renderMesh				= new RenderMesh();
 		material							= new Material( refMaterial );
@@ -41,34 +42,41 @@ public class Spawner : MonoBehaviour
 
 
 		// Create cells
-		for (int y = 0; y < gridSize.y; y ++)
-		for (int x = 0; x < gridSize.x; x ++)
+		ForEach( nativeArray, gridSize, (entity, x, y) =>
 		{
-			Entity cell				= nativeArray[ y * gridSize.x + x ];
 			Vector2 posMin			= gridMin_w + new Vector2( x, y ) * blockSize;
 			Vector2 posCenter		= posMin + Vector2.one * blockSize / 2;
 
-			entityManager.SetComponentData( cell, new Translation { Value = (Vector3)posCenter } );
-			entityManager.AddComponentData( cell, new Scale { Value = blockScale } );
-			entityManager.AddComponentData( cell, new GridPosition( x, y ) );
-			entityManager.SetSharedComponentData( cell, renderMesh );
-		}
+			entityManager.SetComponentData( entity, new Translation { Value = (Vector3)posCenter } );
+			entityManager.AddComponentData( entity, new Scale { Value = blockScale } );
+			entityManager.AddComponentData( entity, new GridPosition( x, y ) );
+			entityManager.SetSharedComponentData( entity, renderMesh );
+		});
 
 
 		// Create grid
 		Entity grid							= entityManager.CreateEntity();
 		entityManager.AddComponent< Draggable >( grid );
 		DynamicBuffer< Cell > cells			= entityManager.AddBuffer< Cell >( grid );
-		for (int y = 0; y < gridSize.y; y ++)
-		for (int x = 0; x < gridSize.x; x ++)
-		{
-			Entity entity			= nativeArray[ y * gridSize.x + x ];
-
-			cells.Add( new Cell( entity ) );
-		}
+		ForEach( nativeArray, gridSize, (entity, x, y) =>
+			cells.Add( new Cell( entity ) )
+		);
 
 
 		nativeArray.Dispose();
+	}
+
+
+	/// <summary> Helper method to iterate NativeArray representation of 2D grid </summary>
+	void ForEach( NativeArray< Entity > nativeArray, Vector2Int gridSize, Action< Entity, int, int > action )
+	{
+		for (int y = 0; y < gridSize.y; y ++)
+		for (int x = 0; x < gridSize.x; x ++)
+		{
+			Entity entity		= nativeArray[ y * gridSize.x + x ];
+			
+			action( entity, x, y );
+		}
 	}
 
 
