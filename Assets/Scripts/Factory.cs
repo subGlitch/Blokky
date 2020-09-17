@@ -7,7 +7,7 @@ using Unity.Transforms;
 using UnityEngine;
 
 
-public class Factory : MonoBehaviour
+public class Factory : MB_Singleton< Factory >
 {
 #pragma warning disable 0649
 
@@ -17,18 +17,7 @@ public class Factory : MonoBehaviour
 #pragma warning restore 0649
 
 
-	void Start()
-	{
-		Vector2Int gridSize		= new Vector2Int( 5, 5 );
-
-		Grid.SetGridSize( gridSize );
-
-		CreateBlock( Vector2.zero, gridSize, false );
-		CreateBlock( Vector2.one, new Vector2Int( 3, 2 ), true );
-	}
-
-
-	void CreateBlock( Vector2 position, Vector2Int size, bool isDraggable )
+	public void CreateBlock( Vector2 position, Vector2Int size, bool isDraggable )
 	{
 		CreateBlockParent( position, isDraggable, out Entity parent, out RenderMesh renderMesh );
 
