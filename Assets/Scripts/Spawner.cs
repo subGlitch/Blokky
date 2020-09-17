@@ -1,17 +1,8 @@
 ﻿using Unity.Collections;
 using Unity.Entities;
-using Unity.Mathematics;
 using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
-
-
-public struct Cell : IBufferElementData
-{
-	public Entity cell;
-
-	public Cell( Entity cell )		=> this.cell		= cell;
-}
 
 
 public class Spawner : MonoBehaviour
@@ -71,8 +62,9 @@ public class Spawner : MonoBehaviour
 		for (int y = 0; y < gridSize.y; y ++)
 		for (int x = 0; x < gridSize.x; x ++)
 		{
-			Entity cell			= nativeArray[ y * gridSize.x + x ];
-			cells.Add( new Cell( cell ) );
+			Entity entity			= nativeArray[ y * gridSize.x + x ];
+
+			cells.Add( new Cell( entity ) );
 		}
 
 

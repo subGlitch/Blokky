@@ -36,10 +36,10 @@ public class DragSystem : ComponentSystem
 		{
 			foreach (Cell cell in entityManager.GetBuffer< Cell >( entity ))
 			{
-				Translation translation			= entityManager.GetComponentData< Translation >( cell.cell );
+				Translation translation			= entityManager.GetComponentData< Translation >( cell.entity );
 				translation.Value				+= (float3)(Vector3)shift;
 
-				entityManager.SetComponentData( cell.cell, translation );
+				entityManager.SetComponentData( cell.entity, translation );
 			}
 		});
 	}
