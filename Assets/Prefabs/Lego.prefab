@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 971173120551349532}
   - component: {fileID: 3954710807571779828}
   m_Layer: 0
-  m_Name: Block Mesh
+  m_Name: Lego
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -34,19 +34,12 @@ public class DragSystem : ComponentSystem
 			
 		Entities
 			.WithAll< Draggable >()
-			.ForEach( entity =>
+			.ForEach( (Entity entity, ref Translation translation) =>
 		{
-			foreach (Cell cell in entityManager.GetBuffer< Cell >( entity ))
-			{
-				Translation translation			= entityManager.GetComponentData< Translation >( cell.entity );
-				translation.Value				+= (float3)(Vector3)shift;
-
-				entityManager.SetComponentData( cell.entity, translation );
-			}
-
+			translation						= new Translation{ Value = translation.Value + (float3)(Vector3)shift };
 
 			RenderMesh renderMesh			= entityManager.GetSharedComponentData< RenderMesh >( entity );
-			renderMesh.material.color		= Random.ColorHSV();
+			// renderMesh.material.color		= Random.ColorHSV();
 		});
 	}
 }

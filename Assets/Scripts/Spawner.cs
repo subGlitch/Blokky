@@ -1,6 +1,7 @@
 ﻿using System;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
@@ -29,8 +30,8 @@ public class Spawner : MonoBehaviour
 
 		SetGridSize( gridSize );
 
-		CreateBlock( gridSize, Vector2.zero, false );
-		CreateBlock( new Vector2Int( 3, 2 ), Vector2.one, true );
+		CreateBlock( Vector2.zero, gridSize, false );
+		CreateBlock( Vector2.one, new Vector2Int( 3, 2 ), true );
 	}
 
 
@@ -43,86 +44,67 @@ public class Spawner : MonoBehaviour
 	}
 
 
-	void CreateBlock( Vector2Int size, Vector2 posCenter_w, bool isDraggable )
+	void CreateBlock( Vector2 position, Vector2Int size, bool isDraggable )
 	{
-		int layer		= isDraggable ? 1 : 0;
-		Color color		= isDraggable ? Color.gray : Color.white;
+		CreateBlockParent( position, isDraggable, out Entity parent, out RenderMesh renderMesh );
 
-		CreateBlockLegos( size, posCenter_w, layer, color, out var legos, out RenderMesh renderMesh );
-
-		CreateBlockParent( size, legos, renderMesh, isDraggable );
-
-		legos.Dispose();		
+		CreateBlockChildren( parent, size, renderMesh );
 	}
 
 
 	void CreateBlockParent(
-			Vector2Int				size,
-			NativeArray< Entity >	legos,
-			RenderMesh				renderMesh,
-			bool					isDraggable
+			Vector2				position,
+			bool				isDraggable,
+			out Entity			block,
+			out RenderMesh		renderMesh
 		)
 	{
+		int layer							= isDraggable ? 1 : 0;
+		float3 position3D					= (Vector3)position + Vector3.back * layer;
+
+		// Create RenderMesh
+		material							= new Material( refMaterial ) { color = isDraggable ? Color.gray : Color.white };
+		renderMesh							= new RenderMesh { material = material, mesh = refMesh };
+
+		// Create entity
         EntityManager entityManager			= World.DefaultGameObjectInjectionWorld.EntityManager;
-		Entity block						= entityManager.CreateEntity();
+		block								= entityManager.CreateEntity();
 		entityManager.SetName( block, "Block" );
 
+		// Add components
+		entityManager.AddComponent< LocalToWorld >( block );
+		entityManager.AddComponentData( block, new Translation{ Value = position3D } );
+		entityManager.AddComponentData( block, new Scale { Value = _legoScale } );
 		if (isDraggable)
 			entityManager.AddComponent< Draggable >( block );
-
 		entityManager.AddSharedComponentData( block, renderMesh );
-
-		DynamicBuffer< Cell > cells			= entityManager.AddBuffer< Cell >( block );
-
-		ForEach( legos, size, (entity, x, y) =>
-			cells.Add( new Cell( entity ) )
-		);
 	}
 
 
-	void CreateBlockLegos(
-			Vector2Int					blockSize,
-			Vector2						blockCenter_w,
-			int							layer,
-			Color						color,
-			out NativeArray< Entity >	legos,
-			out RenderMesh				renderMesh
+	void CreateBlockChildren(
+			Entity			parent,
+			Vector2Int		blockSize,
+			RenderMesh		renderMesh
 		)
 	{
 		// Instantiate entity prefabs
 		int legosCount						= blockSize.x * blockSize.y;
         EntityManager entityManager			= World.DefaultGameObjectInjectionWorld.EntityManager;
-		legos								= entityManager.Instantiate( PrefabEntities.entityPrefab_Lego, legosCount, Allocator.Temp );
-
-		// Create material
-		material							= new Material( refMaterial );
-		material.color						= color;
-
-		// Create RenderMesh
-		renderMesh							= new RenderMesh();
-		renderMesh.material					= material;
-		renderMesh.mesh						= refMesh;
-		renderMesh.layer					= layer;			// Looks like this is ignored by Unity - https://forum.unity.com/threads/rendermesh-layer.661633/
-
-		// Get RenderMesh copy
-		RenderMesh renderMeshCopy			= renderMesh;		// Cannot use 'out' parameter inside lambda
-
-		// Calc
-		Vector2 blockSize_w					= (Vector2)blockSize * _legoSize;
-		Vector2 blockMin_w					= blockCenter_w - blockSize_w / 2;
+		NativeArray< Entity > legos			= entityManager.Instantiate( PrefabEntities.entityPrefab_Lego, legosCount, Allocator.Temp );
 
 		// Set/Add components
-		ForEach( legos, blockSize, (entity, x, y) =>
+		ForEach( legos, blockSize, (lego, x, y) =>
 		{
-			Vector2 posMin					= blockMin_w + new Vector2( x, y ) * _legoSize;
-			Vector3 posCenter				= posMin + Vector2.one * _legoSize / 2;
-			posCenter.z						= layer * (-1);
+			entityManager.AddComponentData( lego, new Parent{ Value = parent } );
+			entityManager.AddComponentData( lego, new LocalToParent() );
 
-			entityManager.SetComponentData( entity, new Translation { Value = posCenter } );
-			entityManager.AddComponentData( entity, new Scale { Value = _legoScale } );
-			entityManager.AddComponentData( entity, new GridPosition( x, y ) );
-			entityManager.SetSharedComponentData( entity, renderMeshCopy );
+			entityManager.SetComponentData( lego, new Translation { Value = new float3( x, y, 0 ) } );
+			entityManager.AddComponentData( lego, new GridPosition( x, y ) );
+
+			entityManager.SetSharedComponentData( lego, renderMesh );
 		});
+
+		legos.Dispose();
 	}
 
 
