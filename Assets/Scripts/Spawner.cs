@@ -66,7 +66,7 @@ public class Spawner : MonoBehaviour
 
 		// Create grid
 		Entity grid							= entityManager.CreateEntity();
-		entityManager.AddComponent< DraggableComponent >( grid );
+		entityManager.AddComponent< Draggable >( grid );
 		DynamicBuffer< Cell > cells			= entityManager.AddBuffer< Cell >( grid );
 		for (int y = 0; y < gridSize.y; y ++)
 		for (int x = 0; x < gridSize.x; x ++)

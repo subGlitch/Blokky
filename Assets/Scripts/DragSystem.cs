@@ -28,9 +28,11 @@ public class DragSystem : ComponentSystem
 
 	void Shift( Vector2 shift )
 	{
-	    EntityManager entityManager				= World.DefaultGameObjectInjectionWorld.EntityManager;
+	    EntityManager entityManager		= World.DefaultGameObjectInjectionWorld.EntityManager;
 			
-		Entities.ForEach( (Entity entity, ref DraggableComponent draggable) =>
+		Entities
+			.WithAll< Draggable >()
+			.ForEach( entity =>
 		{
 			foreach (Cell cell in entityManager.GetBuffer< Cell >( entity ))
 			{
