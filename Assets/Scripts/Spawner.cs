@@ -19,51 +19,65 @@ public class Spawner : MonoBehaviour
 #pragma warning restore 0649
 
 
+	float	_blockSize;
+	float	_blockScale;
+
+
 	void Start()
 	{
 		Vector2Int gridSize		= new Vector2Int( 2, 2 );
 
+		SetGridSize( gridSize );
 
+		CreateBlock( gridSize, Vector2.zero );
+	}
+
+
+	void SetGridSize( Vector2Int gridSize )
+	{
 		Vector2 gridSize_w		= CalcGridWorldSize( gridSize );
-		Vector2 gridCenter_w	= Vector2.zero;
-		Vector2 gridMin_w		= gridCenter_w - gridSize_w / 2;
 
-		float blockSize			= gridSize_w.x / gridSize.x;
-		float blockScale		= blockSize;
+		_blockSize				= gridSize_w.x / gridSize.x;
+		_blockScale				= _blockSize;
+	}
 
-		int count							= gridSize.x * gridSize.y;
+
+	void CreateBlock( Vector2Int blockSize, Vector2 blockCenter_w )
+	{
+		Vector2 blockSize_w					= (Vector2)blockSize * _blockSize;
+		Vector2 blockMin_w					= blockCenter_w - blockSize_w / 2;
+
+
+		// Create Legos
         EntityManager entityManager			= World.DefaultGameObjectInjectionWorld.EntityManager;
-		NativeArray< Entity > nativeArray	= entityManager.Instantiate( PrefabEntities.entityPrefab_Lego, count, Allocator.Temp );
-
+		int legosCount						= blockSize.x * blockSize.y;
+		NativeArray< Entity > legos			= entityManager.Instantiate( PrefabEntities.entityPrefab_Lego, legosCount, Allocator.Temp );
 		RenderMesh renderMesh				= new RenderMesh();
 		material							= new Material( refMaterial );
 		renderMesh.material					= material;
 		renderMesh.mesh						= refMesh;
-
-
-		// Create cells
-		ForEach( nativeArray, gridSize, (entity, x, y) =>
+		ForEach( legos, blockSize, (entity, x, y) =>
 		{
-			Vector2 posMin			= gridMin_w + new Vector2( x, y ) * blockSize;
-			Vector2 posCenter		= posMin + Vector2.one * blockSize / 2;
+			Vector2 posMin					= blockMin_w + new Vector2( x, y ) * _blockSize;
+			Vector2 posCenter				= posMin + Vector2.one * _blockSize / 2;
 
 			entityManager.SetComponentData( entity, new Translation { Value = (Vector3)posCenter } );
-			entityManager.AddComponentData( entity, new Scale { Value = blockScale } );
+			entityManager.AddComponentData( entity, new Scale { Value = _blockScale } );
 			entityManager.AddComponentData( entity, new GridPosition( x, y ) );
 			entityManager.SetSharedComponentData( entity, renderMesh );
 		});
 
 
-		// Create block
+		// Create Block
 		Entity block						= entityManager.CreateEntity();
 		entityManager.AddComponent< Draggable >( block );
 		DynamicBuffer< Cell > cells			= entityManager.AddBuffer< Cell >( block );
-		ForEach( nativeArray, gridSize, (entity, x, y) =>
+		ForEach( legos, blockSize, (entity, x, y) =>
 			cells.Add( new Cell( entity ) )
 		);
 
 
-		nativeArray.Dispose();
+		legos.Dispose();		
 	}
 
 
@@ -82,12 +96,12 @@ public class Spawner : MonoBehaviour
 
 
 	/// <summary> Helper method to iterate NativeArray representation of 2D grid </summary>
-	void ForEach( NativeArray< Entity > nativeArray, Vector2Int gridSize, Action< Entity, int, int > action )
+	void ForEach( NativeArray< Entity > nativeArray, Vector2Int blockSize, Action< Entity, int, int > action )
 	{
-		for (int y = 0; y < gridSize.y; y ++)
-		for (int x = 0; x < gridSize.x; x ++)
+		for (int y = 0; y < blockSize.y; y ++)
+		for (int x = 0; x < blockSize.x; x ++)
 		{
-			Entity entity		= nativeArray[ y * gridSize.x + x ];
+			Entity entity		= nativeArray[ y * blockSize.x + x ];
 			
 			action( entity, x, y );
 		}
