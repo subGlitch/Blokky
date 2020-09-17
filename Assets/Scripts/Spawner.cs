@@ -6,6 +6,14 @@ using Unity.Transforms;
 using UnityEngine;
 
 
+public struct Cell : IBufferElementData
+{
+	public Entity cell;
+
+	public Cell( Entity cell )		=> this.cell		= cell;
+}
+
+
 public class Spawner : MonoBehaviour
 {
 #pragma warning disable 0649
@@ -21,7 +29,7 @@ public class Spawner : MonoBehaviour
 
 	void Start()
 	{
-		Vector2Int gridSize		= new Vector2Int( 17, 17 );
+		Vector2Int gridSize		= new Vector2Int( 2, 2 );
 
 
 		Vector2 gridSize_w		= CalcGridWorldSize( gridSize );
@@ -40,22 +48,32 @@ public class Spawner : MonoBehaviour
 		renderMesh.material					= material;
 		renderMesh.mesh						= refMesh;
 
+
+		// Create cells
 		for (int y = 0; y < gridSize.y; y ++)
 		for (int x = 0; x < gridSize.x; x ++)
 		{
-			Entity entity		= nativeArray[ y * gridSize.x + x ];
-			float3 posMin		= new float3(
-												gridMin_w.x + x * blockSize,
-												gridMin_w.y + y * blockSize,
-												0
-			);
-			float3 posCenter	= posMin + blockSize / 2;
+			Entity cell				= nativeArray[ y * gridSize.x + x ];
+			Vector2 posMin			= gridMin_w + new Vector2( x, y ) * blockSize;
+			Vector2 posCenter		= posMin + Vector2.one * blockSize / 2;
 
-			entityManager.SetComponentData( entity, new Translation { Value = posCenter } );
-			entityManager.AddComponentData( entity, new Scale { Value = blockScale } );
-			entityManager.AddComponentData( entity, new GridPositionComponent( x, y ) );
-			entityManager.SetSharedComponentData( entity, renderMesh );
+			entityManager.SetComponentData( cell, new Translation { Value = (Vector3)posCenter } );
+			entityManager.AddComponentData( cell, new Scale { Value = blockScale } );
+			entityManager.AddComponentData( cell, new GridPositionComponent( x, y ) );
+			entityManager.SetSharedComponentData( cell, renderMesh );
 		}
+
+
+		// Create grid
+		Entity grid							= entityManager.CreateEntity();
+		DynamicBuffer< Cell > cells			= entityManager.AddBuffer< Cell >( grid );
+		for (int y = 0; y < gridSize.y; y ++)
+		for (int x = 0; x < gridSize.x; x ++)
+		{
+			Entity cell			= nativeArray[ y * gridSize.x + x ];
+			cells.Add( new Cell( cell ) );
+		}
+
 
 		nativeArray.Dispose();
 	}
