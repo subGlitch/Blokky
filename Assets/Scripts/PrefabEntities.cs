@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class PrefabEntities : MonoBehaviour, IDeclareReferencedPrefabs, IConvertGameObjectToEntity
 {
-	public static Entity	prefab_Block;
+	public static Entity	entityPrefab_Block;
 
 	public GameObject		goPrefab_Block;
 
@@ -17,6 +17,6 @@ public class PrefabEntities : MonoBehaviour, IDeclareReferencedPrefabs, IConvert
 
 	public void Convert( Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem )
 	=>
-		prefab_Block		= conversionSystem.GetPrimaryEntity( goPrefab_Block );
+		entityPrefab_Block		= conversionSystem.GetPrimaryEntity( goPrefab_Block );
 }
 
