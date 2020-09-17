@@ -32,11 +32,13 @@ public class DragSystem : ComponentSystem
 			
 		Entities.ForEach( (Entity entity, ref DraggableComponent draggable) =>
 		{
-			DynamicBuffer< Cell > cells			= entityManager.GetBuffer< Cell >( entity );
-			Translation cellTranslation			= entityManager.GetComponentData< Translation >( cells[ 0 ].cell );
-			cellTranslation.Value				+= (float3)(Vector3)shift;
+			foreach (Cell cell in entityManager.GetBuffer< Cell >( entity ))
+			{
+				Translation translation			= entityManager.GetComponentData< Translation >( cell.cell );
+				translation.Value				+= (float3)(Vector3)shift;
 
-			entityManager.SetComponentData( cells[ 0 ].cell, cellTranslation );
+				entityManager.SetComponentData( cell.cell, translation );
+			}
 		});
 	}
 }
