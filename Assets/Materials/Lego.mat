@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Block
+  m_Name: Lego
   m_Shader: {fileID: 4800000, guid: 858de907b3ec86c48bda2a63183abfc2, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4

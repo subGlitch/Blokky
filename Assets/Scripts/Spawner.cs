@@ -33,7 +33,7 @@ public class Spawner : MonoBehaviour
 
 		int count							= gridSize.x * gridSize.y;
         EntityManager entityManager			= World.DefaultGameObjectInjectionWorld.EntityManager;
-		NativeArray< Entity > nativeArray	= entityManager.Instantiate( PrefabEntities.entityPrefab_Block, count, Allocator.Temp );
+		NativeArray< Entity > nativeArray	= entityManager.Instantiate( PrefabEntities.entityPrefab_Lego, count, Allocator.Temp );
 
 		RenderMesh renderMesh				= new RenderMesh();
 		material							= new Material( refMaterial );

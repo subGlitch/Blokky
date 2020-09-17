@@ -180,7 +180,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f805cda9e3b7a314ab0ec0fdd806daf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goPrefab_Block: {fileID: 1202068243085698223, guid: 8bf53703dd0a2e64e9e2d1e93df73ab6, type: 3}
+  goPrefab_Lego: {fileID: 1202068243085698223, guid: 8bf53703dd0a2e64e9e2d1e93df73ab6, type: 3}
 --- !u!1 &518436101
 GameObject:
   m_ObjectHideFlags: 0
