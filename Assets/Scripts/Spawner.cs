@@ -54,10 +54,10 @@ public class Spawner : MonoBehaviour
 		});
 
 
-		// Create grid
-		Entity grid							= entityManager.CreateEntity();
-		entityManager.AddComponent< Draggable >( grid );
-		DynamicBuffer< Cell > cells			= entityManager.AddBuffer< Cell >( grid );
+		// Create block
+		Entity block						= entityManager.CreateEntity();
+		entityManager.AddComponent< Draggable >( block );
+		DynamicBuffer< Cell > cells			= entityManager.AddBuffer< Cell >( block );
 		ForEach( nativeArray, gridSize, (entity, x, y) =>
 			cells.Add( new Cell( entity ) )
 		);
