@@ -50,7 +50,7 @@ public class Spawner : MonoBehaviour
 
 			entityManager.SetComponentData( cell, new Translation { Value = (Vector3)posCenter } );
 			entityManager.AddComponentData( cell, new Scale { Value = blockScale } );
-			entityManager.AddComponentData( cell, new GridPositionComponent( x, y ) );
+			entityManager.AddComponentData( cell, new GridPosition( x, y ) );
 			entityManager.SetSharedComponentData( cell, renderMesh );
 		}
 
