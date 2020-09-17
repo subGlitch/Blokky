@@ -19,8 +19,8 @@ public class Spawner : MonoBehaviour
 #pragma warning restore 0649
 
 
-	float	_blockSize;
-	float	_blockScale;
+	float	_legoSize;
+	float	_legoScale;
 
 
 	void Start()
@@ -37,22 +37,22 @@ public class Spawner : MonoBehaviour
 	{
 		Vector2 gridSize_w		= CalcGridWorldSize( gridSize );
 
-		_blockSize				= gridSize_w.x / gridSize.x;
-		_blockScale				= _blockSize;
+		_legoSize				= gridSize_w.x / gridSize.x;
+		_legoScale				= _legoSize;
 	}
 
 
-	void CreateBlock( Vector2Int blockSize, Vector2 blockCenter_w )
+	void CreateBlock( Vector2Int size, Vector2 posCenter_w )
 	{
-		CreateBlockLegos( blockSize, blockCenter_w, out var legos );
+		CreateBlockLegos( size, posCenter_w, out var legos );
 
-		CreateBlockParent( blockSize, legos );
+		CreateBlockParent( size, legos );
 
 		legos.Dispose();		
 	}
 
 
-	void CreateBlockParent( Vector2Int blockSize, NativeArray< Entity > legos )
+	void CreateBlockParent( Vector2Int size, NativeArray< Entity > legos )
 	{
         EntityManager entityManager			= World.DefaultGameObjectInjectionWorld.EntityManager;
 		Entity block						= entityManager.CreateEntity();
@@ -61,7 +61,7 @@ public class Spawner : MonoBehaviour
 
 		DynamicBuffer< Cell > cells			= entityManager.AddBuffer< Cell >( block );
 
-		ForEach( legos, blockSize, (entity, x, y) =>
+		ForEach( legos, size, (entity, x, y) =>
 			cells.Add( new Cell( entity ) )
 		);
 	}
@@ -78,16 +78,16 @@ public class Spawner : MonoBehaviour
 		renderMesh.material					= material;
 		renderMesh.mesh						= refMesh;
 
-		Vector2 blockSize_w					= (Vector2)blockSize * _blockSize;
+		Vector2 blockSize_w					= (Vector2)blockSize * _legoSize;
 		Vector2 blockMin_w					= blockCenter_w - blockSize_w / 2;
 
 		ForEach( legos, blockSize, (entity, x, y) =>
 		{
-			Vector2 posMin					= blockMin_w + new Vector2( x, y ) * _blockSize;
-			Vector2 posCenter				= posMin + Vector2.one * _blockSize / 2;
+			Vector2 posMin					= blockMin_w + new Vector2( x, y ) * _legoSize;
+			Vector2 posCenter				= posMin + Vector2.one * _legoSize / 2;
 
 			entityManager.SetComponentData( entity, new Translation { Value = (Vector3)posCenter } );
-			entityManager.AddComponentData( entity, new Scale { Value = _blockScale } );
+			entityManager.AddComponentData( entity, new Scale { Value = _legoScale } );
 			entityManager.AddComponentData( entity, new GridPosition( x, y ) );
 			entityManager.SetSharedComponentData( entity, renderMesh );
 		});
