@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class DragSystem : ComponentSystem
 {
-	Vector2		_mouseLast_w;
+	Vector2		_mouseDragLast_w;
 
 
 	protected override void OnUpdate()
@@ -20,9 +20,9 @@ public class DragSystem : ComponentSystem
 		Vector2 mouse_w			= Camera.main.ScreenToWorldPoint( Input.mousePosition );
 
 		if (!isDragStart)
-			Shift( mouse_w - _mouseLast_w );
+			Shift( mouse_w - _mouseDragLast_w );
 
-		_mouseLast_w			= mouse_w;
+		_mouseDragLast_w		= mouse_w;
 	}
 
 
