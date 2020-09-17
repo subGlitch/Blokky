@@ -13,17 +13,11 @@ public class DragSystem : ComponentSystem
 				Input.GetMouseButtonDown( 0 ) ||
 				Input.GetMouseButton( 0 )
 			)
-			Entities.ForEach( (Entity entity, ref Translation translation, ref GridPositionComponent pos) =>
+			Entities
+				.WithAll< GridPositionComponent >()
+				.ForEach( (Entity entity, ref Translation translation) =>
 			{
-				translation.Value					= new float3( (Vector3)(Vector2)Camera.main.ScreenToWorldPoint( Input.mousePosition ) );
-
-		        EntityManager entityManager			= World.DefaultGameObjectInjectionWorld.EntityManager;
-				var renderMesh						= entityManager.GetSharedComponentData< RenderMesh >( entity );
-				var mat								= new Material( renderMesh.material );
-				mat.SetColor( "_Color", UnityEngine.Random.ColorHSV() );
-				renderMesh.material					= mat;
-
-				entityManager.SetSharedComponentData( entity, renderMesh );
+				translation.Value		+= new float3( (Vector3)(Vector2)Camera.main.ScreenToWorldPoint( Input.mousePosition ) );
 			});
 	}
 }

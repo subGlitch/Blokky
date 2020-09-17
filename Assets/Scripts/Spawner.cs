@@ -8,6 +8,17 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
+#pragma warning disable 0649
+
+	[SerializeField] Material	material;
+
+	[Header( "Refs" )]
+	[SerializeField] Material	refMaterial;
+	[SerializeField] Mesh		refMesh;
+
+#pragma warning restore 0649
+
+
 	void Start()
 	{
 		Vector2Int gridSize		= new Vector2Int( 17, 17 );
@@ -24,6 +35,11 @@ public class Spawner : MonoBehaviour
         EntityManager entityManager			= World.DefaultGameObjectInjectionWorld.EntityManager;
 		var nativeArray						= entityManager.Instantiate( PrefabEntities.prefab_Block, count, Allocator.Temp );
 
+		RenderMesh renderMesh				= new RenderMesh();
+		material							= new Material( refMaterial );
+		renderMesh.material					= material;
+		renderMesh.mesh						= refMesh;
+
 		for (int y = 0; y < gridSize.y; y ++)
 		for (int x = 0; x < gridSize.x; x ++)
 		{
@@ -38,6 +54,7 @@ public class Spawner : MonoBehaviour
 			entityManager.SetComponentData( entity, new Translation { Value = posCenter } );
 			entityManager.AddComponentData( entity, new Scale { Value = blockScale } );
 			entityManager.AddComponentData( entity, new GridPositionComponent( x, y ) );
+			entityManager.SetSharedComponentData( entity, renderMesh );
 		}
 
 		nativeArray.Dispose();
