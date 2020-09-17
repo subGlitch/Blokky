@@ -20,27 +20,14 @@ public class Spawner : MonoBehaviour
 #pragma warning restore 0649
 
 
-	float	_legoSize;
-	float	_legoScale;
-
-
 	void Start()
 	{
 		Vector2Int gridSize		= new Vector2Int( 5, 5 );
 
-		SetGridSize( gridSize );
+		Grid.SetGridSize( gridSize );
 
 		CreateBlock( Vector2.zero, gridSize, false );
 		CreateBlock( Vector2.one, new Vector2Int( 3, 2 ), true );
-	}
-
-
-	void SetGridSize( Vector2Int gridSize )
-	{
-		Vector2 gridSize_w		= CalcGridWorldSize( gridSize );
-
-		_legoSize				= gridSize_w.x / gridSize.x;
-		_legoScale				= _legoSize;
 	}
 
 
@@ -74,7 +61,7 @@ public class Spawner : MonoBehaviour
 		// Add components
 		entityManager.AddComponent< LocalToWorld >( block );
 		entityManager.AddComponentData( block, new Translation{ Value = position3D } );
-		entityManager.AddComponentData( block, new Scale { Value = _legoScale } );
+		entityManager.AddComponentData( block, new Scale { Value = Grid.LegoScale } );
 		if (isDraggable)
 			entityManager.AddComponent< Draggable >( block );
 		entityManager.AddSharedComponentData( block, renderMesh );
@@ -108,20 +95,6 @@ public class Spawner : MonoBehaviour
 		});
 
 		legos.Dispose();
-	}
-
-
-	Vector2 CalcGridWorldSize( Vector2Int gridSize )
-	{
-		Camera mainCamera			= Camera.main;
-
-		float screenWorldHeight		= mainCamera.orthographicSize * 2;
-		float screenWorldWidth		= screenWorldHeight * mainCamera.aspect;
-
-		float girdWorldWidth		= screenWorldWidth;
-		float girdWorldHeight		= girdWorldWidth * gridSize.y / gridSize.x;
-
-		return new Vector2( girdWorldWidth, girdWorldHeight );
 	}
 
 
