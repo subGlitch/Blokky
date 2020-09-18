@@ -46,20 +46,28 @@ public class DragSystem : ComponentSystem
 			{
 				translation						= new Translation{ Value = translation.Value + (float3)(Vector3)shift };
 
-				Rect rect						= GetRect( draggable );
-				bool overlaps					= false;
-				foreach (Entity grid in grids)
-				{
-					Rect gridRect				= GetRect( grid );
-					overlaps					= rect.Overlaps( gridRect );
-					if (overlaps)
-						break;
-				}
+				bool overlaps					= FindGridOverlappedBy( draggable, grids ) != Entity.Null;
 
 				RenderMesh renderMesh			= entityManager.GetSharedComponentData< RenderMesh >( draggable );
 				renderMesh.material.color		= overlaps ? Color.blue : Color.gray;
 			});
 		}
+	}
+
+
+	Entity FindGridOverlappedBy( Entity block, NativeArray< Entity > grids )
+	{
+		Rect rect				= GetRect( block );
+
+		foreach (Entity grid in grids)
+		{
+			Rect gridRect		= GetRect( grid );
+
+			if (rect.Overlaps( gridRect ))
+				return grid;
+		}
+		
+		return Entity.Null;;
 	}
 
 
