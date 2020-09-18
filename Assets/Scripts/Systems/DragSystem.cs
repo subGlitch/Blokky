@@ -1,18 +1,15 @@
 ﻿using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
 
 
-[UpdateInGroup( typeof(DragSystemsGroup) )]
-public class DragSystem : ComponentSystem
+public class DragSystem : DragSystemBase
 {
 	Vector2			Mouse_w			=> Camera.main.ScreenToWorldPoint( Input.mousePosition );
 
 
-	EntityManager	_entityManager;
 	Vector2			_mouseDragLast_w;
 
 
@@ -24,9 +21,6 @@ public class DragSystem : ComponentSystem
 		Continue,
 		Finish,
 	}
-
-
-	protected override void OnCreate()		=> _entityManager		= World.DefaultGameObjectInjectionWorld.EntityManager;
 
 
 	protected override void OnUpdate()
@@ -93,45 +87,11 @@ public class DragSystem : ComponentSystem
 
 				float3 position					= new float3( dragPosition, translation.Value.z );
 				translation						= new Translation{ Value = position };
-
-				bool overlaps					= FindGridOverlappedBy( draggable, grids ) != Entity.Null;
-
-				RenderMesh renderMesh			= _entityManager.GetSharedComponentData< RenderMesh >( draggable );
-				renderMesh.material.color		= overlaps ? Color.blue : Color.gray;
 			});
 		}
 	}
 
 
-	EntityQueryBuilder GetDraggable()		=> Entities.WithAll< IsDraggable >();
-
-
-	Entity FindGridOverlappedBy( Entity block, NativeArray< Entity > grids )
-	{
-		Rect rect				= GetRect( block );
-
-		foreach (Entity grid in grids)
-		{
-			Rect gridRect		= GetRect( grid );
-
-			if (rect.Overlaps( gridRect ))
-				return grid;
-		}
-		
-		return Entity.Null;;
-	}
-
-
-	Rect GetRect( Entity block )
-	{
-		Translation translation			= _entityManager.GetComponentData< Translation >( block );
-		BlockSize blockSize				= _entityManager.GetComponentData< BlockSize >( block );
-		
-		Vector2 size_w					= (float2)blockSize.Value * Grid.LegoScale;
-		Vector2 rectPos_w				= (Vector2)translation.Value.xy - size_w / 2;
-		Rect rect_w						= new Rect( rectPos_w, size_w );
-
-		return rect_w;
-	}
+	protected EntityQueryBuilder GetDraggable()		=> Entities.WithAll< IsDraggable >();
 }
 
