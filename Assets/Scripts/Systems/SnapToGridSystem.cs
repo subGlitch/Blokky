@@ -64,7 +64,7 @@ public class SnapToGridSystem : DragSystemBase
 	float2 OffsetToNearestCell( Entity block )
 	{
 		int2 blockSize					= EntityManager.GetComponentData< BlockSize >( block ).Value;
-		float2 blockSize_w				= (float2)blockSize * Grid.LegoSize;
+		float2 blockSize_w				= blockSize.ToWorldSize();
 
 		// _l suffix - local (but scaled) coordinates >>>
 
@@ -98,7 +98,7 @@ public class SnapToGridSystem : DragSystemBase
 		Translation translation			= EntityManager.GetComponentData< Translation >( block );
 		BlockSize blockSize				= EntityManager.GetComponentData< BlockSize >( block );
 		
-		Vector2 size_w					= (float2)blockSize.Value * Grid.LegoScale;
+		Vector2 size_w					= blockSize.Value.ToWorldSize();
 		Vector2 rectPos_w				= (Vector2)translation.Value.xy - size_w / 2;
 		Rect rect_w						= new Rect( rectPos_w, size_w );
 
