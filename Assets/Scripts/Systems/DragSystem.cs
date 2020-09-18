@@ -78,7 +78,7 @@ public class DragSystem : ComponentSystem
 		Translation translation			= entityManager.GetComponentData< Translation >( block );
 		BlockSize blockSize				= entityManager.GetComponentData< BlockSize >( block );
 		
-		Vector2 size_w					= (float2)blockSize.size * Grid.LegoScale;
+		Vector2 size_w					= (float2)blockSize.Value * Grid.LegoScale;
 		Vector2 rectPos_w				= (Vector2)translation.Value.xy - size_w / 2;
 		Rect rect_w						= new Rect( rectPos_w, size_w );
 
