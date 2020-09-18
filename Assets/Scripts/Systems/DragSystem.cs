@@ -30,7 +30,9 @@ public class DragSystem : ComponentSystem
 
 	void Shift( Vector2 shift )
 	{
-		EntityQuery query						= GetEntityQuery( typeof(IsGrid) );
+		// Entity grid							= GetSingletonEntity< IsGrid >();								// Simple version
+		EntityQuery query						= GetEntityQuery( typeof(IsGrid) );			// Generalized approach (can have multiple grids)
+
 		using (NativeArray< Entity > grids		= query.ToEntityArray( Allocator.TempJob ))
 		{
 			if (grids.Length == 0)
@@ -40,20 +42,31 @@ public class DragSystem : ComponentSystem
 
 			Entities
 				.WithAll< IsDraggable >()
-				.ForEach( (Entity entity, ref Translation translation, ref BlockSize blockSize) =>
+				.ForEach( (Entity draggable, ref Translation translation) =>
 			{
 				translation						= new Translation{ Value = translation.Value + (float3)(Vector3)shift };
 
-				Vector2 size_w					= (float2)blockSize.size * Grid.LegoScale;
-				Vector2 rectPos_w				= (Vector2)translation.Value.xy - size_w / 2;
-				Rect rect						= new Rect( rectPos_w, size_w );
+				bool interscects				= GetRect( draggable ).yMin > 0;
 
-				bool interscects				= rect.yMin > 0;
-
-				RenderMesh renderMesh			= entityManager.GetSharedComponentData< RenderMesh >( entity );
+				RenderMesh renderMesh			= entityManager.GetSharedComponentData< RenderMesh >( draggable );
 				renderMesh.material.color		= interscects ? Color.blue : Color.gray;
 			});
 		}
+	}
+
+
+	Rect GetRect( Entity block )
+	{
+		EntityManager entityManager		= World.DefaultGameObjectInjectionWorld.EntityManager;
+		
+		Translation translation			= entityManager.GetComponentData< Translation >( block );
+		BlockSize blockSize				= entityManager.GetComponentData< BlockSize >( block );
+		
+		Vector2 size_w					= (float2)blockSize.size * Grid.LegoScale;
+		Vector2 rectPos_w				= (Vector2)translation.Value.xy - size_w / 2;
+		Rect rect_w						= new Rect( rectPos_w, size_w );
+
+		return rect_w;
 	}
 }
 
