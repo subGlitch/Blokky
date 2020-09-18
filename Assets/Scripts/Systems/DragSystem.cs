@@ -6,10 +6,13 @@ using Unity.Transforms;
 using UnityEngine;
 
 
+[UpdateInGroup( typeof(DragSystemsGroup) )]
 public class DragSystem : ComponentSystem
 {
-	EntityManager	_entityManager;
+	Vector2			Mouse_w			=> Camera.main.ScreenToWorldPoint( Input.mousePosition );
 
+
+	EntityManager	_entityManager;
 	Vector2			_mouseDragLast_w;
 
 
@@ -32,17 +35,15 @@ public class DragSystem : ComponentSystem
 																		DragState.None
 		;
 
-		Vector2 mouse_w			= Camera.main.ScreenToWorldPoint( Input.mousePosition );
-
 		switch (state)
 		{
 			case DragState.Start:		DragStart();											break;
-			case DragState.Continue:	DragContinue( mouse_w - _mouseDragLast_w );		break;
+			case DragState.Continue:	DragContinue( Mouse_w - _mouseDragLast_w );		break;
 
 			default:					return;
 		}
 
-		_mouseDragLast_w		= mouse_w;
+		_mouseDragLast_w		= Mouse_w;
 	}
 
 
