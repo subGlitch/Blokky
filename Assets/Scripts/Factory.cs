@@ -49,7 +49,9 @@ public class Factory : MB_Singleton< Factory >
 		entityManager.AddComponentData( block, new Translation{ Value = position3D } );
 		entityManager.AddComponentData( block, new Scale { Value = Grid.LegoScale } );
 		if (isDraggable)
-			entityManager.AddComponent< Draggable >( block );
+			entityManager.AddComponent< IsDraggable >( block );
+		else
+			entityManager.AddComponent< IsGrid >( block );
 		entityManager.AddSharedComponentData( block, renderMesh );
 	}
 
