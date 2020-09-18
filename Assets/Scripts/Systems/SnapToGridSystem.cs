@@ -47,8 +47,14 @@ public class SnapToGridSystem : DragSystemBase
 				float2 anyCellOnGrid			= gridPos + otnc_Grid;
 				float2 anyCellOnBlock			= dragPos + otnc_Block;
 
-				float2 snap						= (anyCellOnGrid - anyCellOnBlock) % Grid.LegoSize;
-				float2 snappedPosition			= dragPos + snap;
+				float2 snapPositive				= (anyCellOnGrid - anyCellOnBlock).NegativeSafeMod( Grid.LegoSize );
+				float2 snapNegative				= snapPositive - Grid.LegoSize;
+				float2 snapNearest				= new float2(
+																snapPositive.x < snapNegative.x * (-1) ? snapPositive.x : snapNegative.x,
+																snapPositive.y < snapNegative.y * (-1) ? snapPositive.y : snapNegative.y
+				);
+
+				float2 snappedPosition			= dragPos + snapNearest;
 
 				Translation translation			= EntityManager.GetComponentData< Translation >( block );
 				translation						= new Translation{ Value = new float3( snappedPosition, translation.Value.z ) };
@@ -75,7 +81,7 @@ public class SnapToGridSystem : DragSystemBase
 		float2 someCellCenter_l			= localMinCell_l;
 		float2 delta					= blockCenter_l - someCellCenter_l;
 
-		float2 offsetToNearestCell		= delta % Grid.LegoSize;
+		float2 offsetToNearestCell		= delta.NegativeSafeMod( Grid.LegoSize );
 
 		return offsetToNearestCell;
 	}

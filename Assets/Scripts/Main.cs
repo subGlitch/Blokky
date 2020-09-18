@@ -5,7 +5,8 @@ public class Main : MonoBehaviour
 {
 	void Start()
 	{
-		Vector2Int gridSize		= new Vector2Int( 17, 17 );
+		Vector2Int gridSize			= new Vector2Int( 17, 17 );
+		//Vector2Int gridSize		= new Vector2Int( 5, 5 );
 
 		Grid.SetGridSize( gridSize );
 

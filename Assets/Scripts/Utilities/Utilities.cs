@@ -1,4 +1,5 @@
 ﻿using System;
+using Unity.Mathematics;
 
 
 public static class Utilities
@@ -10,5 +11,14 @@ public static class Utilities
 		
 		return @this;
 	}
+
+
+#region Math
+
+	// https://stackoverflow.com/questions/1082917/mod-of-negative-number-is-melting-my-brain
+	public static float		NegativeSafeMod( this float x, float m )			=> (x % m + m) % m;
+	public static float2	NegativeSafeMod( this float2 x, float m )			=> (x % m + m) % m;
+
+#endregion
 }
 
