@@ -8,28 +8,58 @@ using UnityEngine;
 
 public class DragSystem : ComponentSystem
 {
-	Vector2		_mouseDragLast_w;
+	EntityManager	_entityManager;
+
+	Vector2			_mouseDragLast_w;
+
+
+	enum DragState
+	{
+		None,
+		Start,
+		Continue,
+	}
+
+
+	protected override void OnCreate()		=> _entityManager		= World.DefaultGameObjectInjectionWorld.EntityManager;
 
 
 	protected override void OnUpdate()
 	{
-		bool isDrag				= Input.GetMouseButton( 0 );
-		bool isDragStart		= Input.GetMouseButtonDown( 0 );
-		bool isDragContinue		= isDrag && !isDragStart;
+		DragState state			=
+									Input.GetMouseButtonDown( 0 )	?	DragState.Start		:
+									Input.GetMouseButton( 0 )		?	DragState.Continue	:
+																		DragState.None
+		;
 
-		if (!isDrag)
-			return;
-		
 		Vector2 mouse_w			= Camera.main.ScreenToWorldPoint( Input.mousePosition );
 
-		if (isDragContinue)
-			Shift( mouse_w - _mouseDragLast_w );
+		switch (state)
+		{
+			case DragState.Start:		DragStart();											break;
+			case DragState.Continue:	DragContinue( mouse_w - _mouseDragLast_w );		break;
+
+			default:					return;
+		}
 
 		_mouseDragLast_w		= mouse_w;
 	}
 
 
-	void Shift( Vector2 shift )
+	void DragStart()
+	{
+		GetDraggable().ForEach(
+			(
+				Entity draggable,
+				ref Translation translation			// Can't use 'in' param inside ComponentSystem, it's possible only in SystemBase =(((
+			) =>
+		{
+			_entityManager.AddComponentData( draggable, new DragPosition( translation.Value.xy ) );
+		});
+	}
+
+
+	void DragContinue( Vector2 shift )
 	{
 		// Entity grid							= GetSingletonEntity< IsGrid >();								// Simple version
 		EntityQuery query						= GetEntityQuery( typeof(IsGrid) );			// Generalized approach (can have multiple grids)
@@ -39,21 +69,20 @@ public class DragSystem : ComponentSystem
 			if (grids.Length == 0)
 				return;
 
-			EntityManager entityManager			= World.DefaultGameObjectInjectionWorld.EntityManager;
-
-			Entities
-				.WithAll< IsDraggable >()
-				.ForEach( (Entity draggable, ref Translation translation) =>
+			GetDraggable().ForEach( (Entity draggable, ref Translation translation) =>
 			{
 				translation						= new Translation{ Value = translation.Value + (float3)(Vector3)shift };
 
 				bool overlaps					= FindGridOverlappedBy( draggable, grids ) != Entity.Null;
 
-				RenderMesh renderMesh			= entityManager.GetSharedComponentData< RenderMesh >( draggable );
+				RenderMesh renderMesh			= _entityManager.GetSharedComponentData< RenderMesh >( draggable );
 				renderMesh.material.color		= overlaps ? Color.blue : Color.gray;
 			});
 		}
 	}
+
+
+	EntityQueryBuilder GetDraggable()		=> Entities.WithAll< IsDraggable >();
 
 
 	Entity FindGridOverlappedBy( Entity block, NativeArray< Entity > grids )
@@ -74,10 +103,8 @@ public class DragSystem : ComponentSystem
 
 	Rect GetRect( Entity block )
 	{
-		EntityManager entityManager		= World.DefaultGameObjectInjectionWorld.EntityManager;
-		
-		Translation translation			= entityManager.GetComponentData< Translation >( block );
-		BlockSize blockSize				= entityManager.GetComponentData< BlockSize >( block );
+		Translation translation			= _entityManager.GetComponentData< Translation >( block );
+		BlockSize blockSize				= _entityManager.GetComponentData< BlockSize >( block );
 		
 		Vector2 size_w					= (float2)blockSize.Value * Grid.LegoScale;
 		Vector2 rectPos_w				= (Vector2)translation.Value.xy - size_w / 2;
