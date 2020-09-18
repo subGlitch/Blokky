@@ -37,16 +37,17 @@ public class SnapToGridSystem : DragSystemBase
 				if (grid == Entity.Null)
 					continue;
 
-				float2 otnc_Grid				= OffsetToNearestCell( grid );
-				float2 otnc_Block				= OffsetToNearestCell( block );
-
 				float2 gridPos					= EntityManager.GetComponentData< Translation >( grid ).Value.xy;
 				float2 dragPos					= EntityManager.GetComponentData< DragPosition >( block ).Value;
 
-				float2 someCellGrid				= gridPos + otnc_Grid;
-				float2 someCellBlock			= dragPos + otnc_Block;
+				float2 otnc_Grid				= OffsetToNearestCell( grid );
+				float2 otnc_Block				= OffsetToNearestCell( block );
 
-				float2 snap						= (someCellGrid - someCellBlock) % Grid.LegoSize;
+				// For snapping it doesn't matter which cell to take (here we taking nearest from block's center), so any cell will do
+				float2 anyCellOnGrid			= gridPos + otnc_Grid;
+				float2 anyCellOnBlock			= dragPos + otnc_Block;
+
+				float2 snap						= (anyCellOnGrid - anyCellOnBlock) % Grid.LegoSize;
 				float2 snappedPosition			= dragPos + snap;
 
 				Translation translation			= EntityManager.GetComponentData< Translation >( block );
@@ -59,6 +60,7 @@ public class SnapToGridSystem : DragSystemBase
 	}
 
 
+	// Offset from center of the block to nearest cell center
 	float2 OffsetToNearestCell( Entity block )
 	{
 		int2 blockSize					= EntityManager.GetComponentData< BlockSize >( block ).Value;
