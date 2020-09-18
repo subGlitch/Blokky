@@ -13,15 +13,16 @@ public class DragSystem : ComponentSystem
 
 	protected override void OnUpdate()
 	{
+		bool isDrag				= Input.GetMouseButton( 0 );
 		bool isDragStart		= Input.GetMouseButtonDown( 0 );
-		bool isDragContinue		= Input.GetMouseButton( 0 );
+		bool isDragContinue		= isDrag && !isDragStart;
 
-		if (!isDragStart && !isDragContinue)
+		if (!isDrag)
 			return;
 		
 		Vector2 mouse_w			= Camera.main.ScreenToWorldPoint( Input.mousePosition );
 
-		if (!isDragStart)
+		if (isDragContinue)
 			Shift( mouse_w - _mouseDragLast_w );
 
 		_mouseDragLast_w		= mouse_w;
