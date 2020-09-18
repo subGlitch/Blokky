@@ -36,9 +36,16 @@ public class SnapToGridSystem : DragSystemBase
 				Entity grid						= FindGridOverlappedBy( block, grids );
 				bool overlaps					= grid != Entity.Null;
 
-				RenderMesh renderMesh			= _entityManager.GetSharedComponentData< RenderMesh >( block );
+				RenderMesh renderMesh			= EntityManager.GetSharedComponentData< RenderMesh >( block );
 				renderMesh.material.color		= overlaps ? Color.blue : Color.gray;
 			}
+	}
+
+
+	float2 OffsetToNearestCell( Entity block )
+	{
+		// float2 dragPos		= _entityManager
+		return float2.zero;
 	}
 
 
@@ -56,8 +63,8 @@ public class SnapToGridSystem : DragSystemBase
 
 	Rect GetRect( Entity block )
 	{
-		Translation translation			= _entityManager.GetComponentData< Translation >( block );
-		BlockSize blockSize				= _entityManager.GetComponentData< BlockSize >( block );
+		Translation translation			= EntityManager.GetComponentData< Translation >( block );
+		BlockSize blockSize				= EntityManager.GetComponentData< BlockSize >( block );
 		
 		Vector2 size_w					= (float2)blockSize.Value * Grid.LegoScale;
 		Vector2 rectPos_w				= (Vector2)translation.Value.xy - size_w / 2;

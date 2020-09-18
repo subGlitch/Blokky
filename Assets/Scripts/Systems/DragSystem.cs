@@ -53,7 +53,7 @@ public class DragSystem : DragSystemBase
 				ref Translation translation					// Can't use 'in' param inside ComponentSystem, it's possible only in SystemBase =(((
 			) =>
 		{
-			_entityManager.AddComponentData( draggable, new DragPosition( translation.Value.xy ) );
+			EntityManager.AddComponentData( draggable, new DragPosition( translation.Value.xy ) );
 		});
 
 
@@ -61,7 +61,7 @@ public class DragSystem : DragSystemBase
 	=>
 		GetDraggable().ForEach( draggable =>
 		{
-			_entityManager.RemoveComponent< DragPosition >( draggable );
+			EntityManager.RemoveComponent< DragPosition >( draggable );
 		});
 
 
