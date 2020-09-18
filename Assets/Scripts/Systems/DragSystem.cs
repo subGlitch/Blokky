@@ -46,10 +46,18 @@ public class DragSystem : ComponentSystem
 			{
 				translation						= new Translation{ Value = translation.Value + (float3)(Vector3)shift };
 
-				bool interscects				= GetRect( draggable ).yMin > 0;
+				Rect rect						= GetRect( draggable );
+				bool overlaps					= false;
+				foreach (Entity grid in grids)
+				{
+					Rect gridRect				= GetRect( grid );
+					overlaps					= rect.Overlaps( gridRect );
+					if (overlaps)
+						break;
+				}
 
 				RenderMesh renderMesh			= entityManager.GetSharedComponentData< RenderMesh >( draggable );
-				renderMesh.material.color		= interscects ? Color.blue : Color.gray;
+				renderMesh.material.color		= overlaps ? Color.blue : Color.gray;
 			});
 		}
 	}
