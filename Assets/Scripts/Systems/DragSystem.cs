@@ -40,12 +40,18 @@ public class DragSystem : ComponentSystem
 
 			Entities
 				.WithAll< IsDraggable >()
-				.ForEach( (Entity entity, ref Translation translation) =>
+				.ForEach( (Entity entity, ref Translation translation, ref BlockSize blockSize) =>
 			{
 				translation						= new Translation{ Value = translation.Value + (float3)(Vector3)shift };
 
+				Vector2 size_w					= (float2)blockSize.size * Grid.LegoScale;
+				Vector2 rectPos_w				= (Vector2)translation.Value.xy - size_w / 2;
+				Rect rect						= new Rect( rectPos_w, size_w );
+
+				bool interscects				= rect.yMin > 0;
+
 				RenderMesh renderMesh			= entityManager.GetSharedComponentData< RenderMesh >( entity );
-				// renderMesh.material.color		= Random.ColorHSV();
+				renderMesh.material.color		= interscects ? Color.blue : Color.gray;
 			});
 		}
 	}
