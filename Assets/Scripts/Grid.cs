@@ -3,7 +3,11 @@
 
 public static class Grid
 {
-	public static float	LegoScale;
+	public static float		LegoScale;
+	public static float		LegoSize				=> LegoPrefabSize * LegoScale;
+
+
+	static float			LegoPrefabSize			=> 1;		// Lego prefab has size of 1 unit
 	
 
 	public static void SetGridSize( Vector2Int gridSize )

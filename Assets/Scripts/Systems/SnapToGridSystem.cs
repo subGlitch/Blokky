@@ -34,18 +34,48 @@ public class SnapToGridSystem : DragSystemBase
 			foreach (Entity block in blocks)
 			{
 				Entity grid						= FindGridOverlappedBy( block, grids );
-				bool overlaps					= grid != Entity.Null;
+				if (grid == Entity.Null)
+					continue;
+
+				float2 otnc_Grid				= OffsetToNearestCell( grid );
+				float2 otnc_Block				= OffsetToNearestCell( block );
+
+				float2 gridPos					= EntityManager.GetComponentData< Translation >( grid ).Value.xy;
+				float2 dragPos					= EntityManager.GetComponentData< DragPosition >( block ).Value;
+
+				float2 someCellGrid				= gridPos + otnc_Grid;
+				float2 someCellBlock			= dragPos + otnc_Block;
+
+				float2 snap						= (someCellGrid - someCellBlock) % Grid.LegoSize;
+				float2 snappedPosition			= dragPos + snap;
+
+				Translation translation			= EntityManager.GetComponentData< Translation >( block );
+				translation						= new Translation{ Value = new float3( snappedPosition, translation.Value.z ) };
+				EntityManager.SetComponentData( block, translation );
 
 				RenderMesh renderMesh			= EntityManager.GetSharedComponentData< RenderMesh >( block );
-				renderMesh.material.color		= overlaps ? Color.blue : Color.gray;
+				// renderMesh.material.color		= overlaps ? Color.blue : Color.gray;
 			}
 	}
 
 
 	float2 OffsetToNearestCell( Entity block )
 	{
-		// float2 dragPos		= _entityManager
-		return float2.zero;
+		int2 blockSize					= EntityManager.GetComponentData< BlockSize >( block ).Value;
+		float2 blockSize_w				= (float2)blockSize * Grid.LegoSize;
+
+		// _l suffix - local (but scaled) coordinates >>>
+
+		float2 blockMin_l				= blockSize_w / (-2);
+		float2 localMinCell_l			= blockMin_l + Grid.LegoSize / 2;
+
+		float2 blockCenter_l			= float2.zero;
+		float2 someCellCenter_l			= localMinCell_l;
+		float2 delta					= blockCenter_l - someCellCenter_l;
+
+		float2 offsetToNearestCell		= delta % Grid.LegoSize;
+
+		return offsetToNearestCell;
 	}
 
 

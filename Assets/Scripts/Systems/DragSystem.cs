@@ -82,7 +82,7 @@ public class DragSystem : DragSystemBase
 					ref DragPosition dragPosComponent
 				) =>
 			{
-				float2 dragPosition				= translation.Value.xy + (float2)shift;
+				float2 dragPosition				= dragPosComponent.Value + (float2)shift;
 				dragPosComponent				= new DragPosition( dragPosition );
 
 				float3 position					= new float3( dragPosition, translation.Value.z );
