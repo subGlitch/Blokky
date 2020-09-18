@@ -31,15 +31,14 @@ public class SnapToGridSystem : DragSystemBase
 
 		using (NativeArray< Entity > blocks		= draggedQuery	.ToEntityArray( Allocator.TempJob ))
 		using (NativeArray< Entity > grids		= gridsQuery	.ToEntityArray( Allocator.TempJob ))
-		{
 			foreach (Entity block in blocks)
 			{
-				bool overlaps					= FindGridOverlappedBy( block, grids ) != Entity.Null;
+				Entity grid						= FindGridOverlappedBy( block, grids );
+				bool overlaps					= grid != Entity.Null;
 
 				RenderMesh renderMesh			= _entityManager.GetSharedComponentData< RenderMesh >( block );
 				renderMesh.material.color		= overlaps ? Color.blue : Color.gray;
 			}
-		}
 	}
 
 
