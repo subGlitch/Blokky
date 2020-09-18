@@ -30,24 +30,24 @@ public class DragSystem : ComponentSystem
 
 	void Shift( Vector2 shift )
 	{
-	    EntityManager entityManager			= World.DefaultGameObjectInjectionWorld.EntityManager;
-		EntityQuery query					= GetEntityQuery( typeof(IsGrid) );
-		NativeArray< Entity > grids			= query.ToEntityArray( Allocator.TempJob );
-		
-		if (grids.Length == 0)
-			return;
-
-		Entities
-			.WithAll< IsDraggable >()
-			.ForEach( (Entity entity, ref Translation translation) =>
+		EntityQuery query						= GetEntityQuery( typeof(IsGrid) );
+		using (NativeArray< Entity > grids		= query.ToEntityArray( Allocator.TempJob ))
 		{
-			translation						= new Translation{ Value = translation.Value + (float3)(Vector3)shift };
+			if (grids.Length == 0)
+				return;
 
-			RenderMesh renderMesh			= entityManager.GetSharedComponentData< RenderMesh >( entity );
-			// renderMesh.material.color		= Random.ColorHSV();
-		});
+			EntityManager entityManager			= World.DefaultGameObjectInjectionWorld.EntityManager;
 
-		grids.Dispose();
+			Entities
+				.WithAll< IsDraggable >()
+				.ForEach( (Entity entity, ref Translation translation) =>
+			{
+				translation						= new Translation{ Value = translation.Value + (float3)(Vector3)shift };
+
+				RenderMesh renderMesh			= entityManager.GetSharedComponentData< RenderMesh >( entity );
+				// renderMesh.material.color		= Random.ColorHSV();
+			});
+		}
 	}
 }
 
