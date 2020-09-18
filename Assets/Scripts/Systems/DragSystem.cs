@@ -19,8 +19,10 @@ public class DragSystem : ComponentSystem
 	enum DragState
 	{
 		None,
+
 		Start,
 		Continue,
+		Finish,
 	}
 
 
@@ -31,6 +33,7 @@ public class DragSystem : ComponentSystem
 	{
 		DragState state			=
 									Input.GetMouseButtonDown( 0 )	?	DragState.Start		:
+									Input.GetMouseButtonUp( 0 )		?	DragState.Finish	:
 									Input.GetMouseButton( 0 )		?	DragState.Continue	:
 																		DragState.None
 		;
@@ -39,6 +42,7 @@ public class DragSystem : ComponentSystem
 		{
 			case DragState.Start:		DragStart();											break;
 			case DragState.Continue:	DragContinue( Mouse_w - _mouseDragLast_w );		break;
+			case DragState.Finish:		DragFinish();											break;
 
 			default:					return;
 		}
@@ -48,7 +52,7 @@ public class DragSystem : ComponentSystem
 
 
 	void DragStart()
-	{
+	=>
 		GetDraggable().ForEach(
 			(
 				Entity draggable,
@@ -57,7 +61,14 @@ public class DragSystem : ComponentSystem
 		{
 			_entityManager.AddComponentData( draggable, new DragPosition( translation.Value.xy ) );
 		});
-	}
+
+
+	void DragFinish()
+	=>
+		GetDraggable().ForEach( draggable =>
+		{
+			_entityManager.RemoveComponent< DragPosition >( draggable );
+		});
 
 
 	void DragContinue( Vector2 shift )
