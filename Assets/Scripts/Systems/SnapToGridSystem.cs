@@ -15,9 +15,9 @@ public class SnapToGridSystem : DragSystemBase
 			Entity grid				= GetSingletonEntity< IsGrid >();
 			Entity draggedBlock		= GetSingletonEntity< DragPosition >();
 
-			We can go this (simple) way (using GetSingletonEntity()), but this is boring :-p
-			Let's go via more generalized approach, instead.
-			So we can drag multiple blocks and have multiple grids =)))
+			We can go this (simple) way (using GetSingletonEntity()), but that's boring :-p
+			Let's go more generalized approach, instead!
+			So we can drag multiple blocks simultaneously and have multiple grids =)))
 		*/
 
 
