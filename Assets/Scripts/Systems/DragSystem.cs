@@ -51,7 +51,7 @@ public class DragSystem : ComponentSystem
 		GetDraggable().ForEach(
 			(
 				Entity draggable,
-				ref Translation translation			// Can't use 'in' param inside ComponentSystem, it's possible only in SystemBase =(((
+				ref Translation translation					// Can't use 'in' param inside ComponentSystem, it's possible only in SystemBase =(((
 			) =>
 		{
 			_entityManager.AddComponentData( draggable, new DragPosition( translation.Value.xy ) );
@@ -69,9 +69,18 @@ public class DragSystem : ComponentSystem
 			if (grids.Length == 0)
 				return;
 
-			GetDraggable().ForEach( (Entity draggable, ref Translation translation) =>
+			GetDraggable().ForEach(
+				(
+					Entity draggable,
+					ref Translation translation,
+					ref DragPosition dragPosComponent
+				) =>
 			{
-				translation						= new Translation{ Value = translation.Value + (float3)(Vector3)shift };
+				float2 dragPosition				= translation.Value.xy + (float2)shift;
+				dragPosComponent				= new DragPosition( dragPosition );
+
+				float3 position					= new float3( dragPosition, translation.Value.z );
+				translation						= new Translation{ Value = position };
 
 				bool overlaps					= FindGridOverlappedBy( draggable, grids ) != Entity.Null;
 
