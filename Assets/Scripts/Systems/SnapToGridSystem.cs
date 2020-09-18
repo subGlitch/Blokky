@@ -44,15 +44,11 @@ public class SnapToGridSystem : DragSystemBase
 
 	Entity FindGridOverlappedBy( Entity block, NativeArray< Entity > grids )
 	{
-		Rect rect				= GetRect( block );
+		Rect rect		= GetRect( block );
 
 		foreach (Entity grid in grids)
-		{
-			Rect gridRect		= GetRect( grid );
-
-			if (rect.Overlaps( gridRect ))
+			if (rect.Overlaps( GetRect( grid ) ))
 				return grid;
-		}
 		
 		return Entity.Null;;
 	}
