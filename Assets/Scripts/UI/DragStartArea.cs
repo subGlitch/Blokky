@@ -15,19 +15,19 @@ public class DragStartArea : MB_Singleton< DragStartArea >, IPointerDownHandler
 			Utilities.DestroyHierarchy( _selectedShape );
 
 		_selectedSize		= size;
-		_selectedShape		= Factory.Instance.CreateBlock(
-															transform.position,
-															size
-		);
+		_selectedShape		= CreateShape();
 	}
 
 
 	public void OnPointerDown( PointerEventData eventData )
+	{
+		if (_selectedShape != Entity.Null)
+			CreateShape( Flags.IsDraggable );
+	}
+
+
+	Entity CreateShape( Flags flags = Flags.None )
 	=>
-		Factory.Instance.CreateBlock(
-			transform.position,
-			_selectedSize,
-			Flags.IsDraggable
-		);
+		Factory.Instance.CreateBlock( transform.position, _selectedSize, flags );
 }
 
