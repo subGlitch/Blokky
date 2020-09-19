@@ -33,11 +33,17 @@ public class DragSystem : DragSystemBase
 
 		switch (state)
 		{
-			case DragState.Start:		DragStart();											break;
-			case DragState.Continue:	DragContinue( Mouse_w - _mouseDragLast_w );		break;
-			case DragState.Finish:		/* Do nothing, this handled by SnapToGridSystem */		break;
+			case DragState.Start:
+				DragStart();
+				break;
 
-			default:					return;
+			case DragState.Continue:
+			case DragState.Finish:
+				DragContinue( Mouse_w - _mouseDragLast_w );
+				break;
+
+			default:
+				return;
 		}
 
 		_mouseDragLast_w		= Mouse_w;

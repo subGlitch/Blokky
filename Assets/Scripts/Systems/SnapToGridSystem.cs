@@ -43,7 +43,7 @@ public class SnapToGridSystem : DragSystemBase
 				RenderMesh renderMesh			= EntityManager.GetSharedComponentData< RenderMesh >( block );
 				// renderMesh.material.color		= overlaps ? Color.blue : Color.gray;
 
-				if (Input.GetMouseButtonUp( 0 ))
+				if (isDragFinish)
 					PlaceOnGrid( block );
 			}
 	}
