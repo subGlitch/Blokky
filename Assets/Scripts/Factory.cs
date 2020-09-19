@@ -19,18 +19,26 @@ public class Factory : MB_Singleton< Factory >
 
 	public void CreateBlock( Vector2 position, Vector2Int size, Flags flags = Flags.None )
 	{
-		CreateBlockParent( position, size, flags, out Entity parent, out RenderMesh renderMesh );
+		CreateBlockParent(
+			position,
+			size,
+			flags,
+			out Entity					parent,
+			out DynamicBuffer< Cell >	cells,
+			out RenderMesh				renderMesh
+		);
 
-		CreateBlockChildren( parent, size, renderMesh );
+		CreateBlockChildren( parent, size, cells, renderMesh );
 	}
 
 
 	void CreateBlockParent(
-			Vector2				position,
-			Vector2Int			size,
-			Flags				flags,
-			out Entity			block,
-			out RenderMesh		renderMesh
+			Vector2						position,
+			Vector2Int					size,
+			Flags						flags,
+			out Entity					block,
+			out DynamicBuffer< Cell >	cells,
+			out RenderMesh				renderMesh
 		)
 	{
 		float scale							= flags.Has( Flags.IsGrid ) ? BlokkyEditor.GridScale : BlokkyEditor.UiScale;
@@ -55,6 +63,7 @@ public class Factory : MB_Singleton< Factory >
 		entityManager.AddComponentData( block, new Translation{ Value = position3D } );
 		entityManager.AddComponentData( block, new Scale { Value = scale } );
 		entityManager.AddComponentData( block, new BlockSize( new int2( size.x, size.y ) ) );
+		cells								= entityManager.AddBuffer< Cell >( block );
 		entityManager.AddSharedComponentData( block, renderMesh );
 
 		// Add Flag components
@@ -64,11 +73,15 @@ public class Factory : MB_Singleton< Factory >
 
 
 	void CreateBlockChildren(
-			Entity			parent,
-			Vector2Int		blockSize,
-			RenderMesh		renderMesh
+			Entity					parent,
+			Vector2Int				blockSize,
+			DynamicBuffer< Cell >	cells,
+			RenderMesh				renderMesh
 		)
 	{
+		var ecb			= World.DefaultGameObjectInjectionWorld
+												.GetOrCreateSystem< EndSimulationEntityCommandBufferSystem >().CreateCommandBuffer();
+
 		// Instantiate entity prefabs
 		int legosCount						= blockSize.x * blockSize.y;
         EntityManager entityManager			= World.DefaultGameObjectInjectionWorld.EntityManager;
@@ -77,6 +90,8 @@ public class Factory : MB_Singleton< Factory >
 		// Set/Add components
 		ForEach( legos, blockSize, (lego, x, y) =>
 		{
+			ecb.AppendToBuffer( parent, new Cell( lego ) );
+
 			entityManager.AddComponentData( lego, new Parent{ Value = parent } );
 			entityManager.AddComponentData( lego, new LocalToParent() );
 

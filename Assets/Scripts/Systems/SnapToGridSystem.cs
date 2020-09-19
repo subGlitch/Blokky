@@ -74,7 +74,7 @@ public class SnapToGridSystem : DragSystemBase
 
 	void PlaceOnGrid( Entity block, Entity grid )
 	{
-		DynamicBuffer< Child> children		= EntityManager.GetBuffer< Child >( grid );
+		DynamicBuffer< Cell > children		= EntityManager.GetBuffer< Cell >( grid );
 		// EntityManager.AddComponent< IsTaken >( children[ 0 ].Value );
 
 		PostUpdateCommands.AddComponent( children[ 0 ].Value, new Scale{ Value = .7f } );
