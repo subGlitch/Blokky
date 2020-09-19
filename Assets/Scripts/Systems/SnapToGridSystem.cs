@@ -43,9 +43,13 @@ public class SnapToGridSystem : DragSystemBase
 
 				SnapToGrid( block, grid, gridScale );
 
+				int2 gridPos		= ProjectOnGrid( block, grid, gridScale, new int2( 0, 0 ) );
+				bool bad			= gridPos.x < 0 || gridPos.y < 0;
+				Debug.Log( gridPos );
+
 				// Set Color
 				RenderMesh renderMesh			= EntityManager.GetSharedComponentData< RenderMesh >( block );
-				// renderMesh.material.color		= overlaps ? Color.blue : Color.gray;
+				renderMesh.material.color		= bad ? Color.red : Color.gray;
 
 				if (isDragFinish)
 					PlaceOnGrid( block );
@@ -53,10 +57,13 @@ public class SnapToGridSystem : DragSystemBase
 	}
 
 
-	Vector2Int ProjectOnGrid( Vector2Int local, float gridScale )
+	int2 ProjectOnGrid( Entity block, Entity grid, float gridScale, int2 local )
 	{
-		//float2 cell_lw		= 
-		return Vector2Int.zero;
+		float2 gridMin					= GetRectOnGrid( grid, gridScale ).min;
+		float2 blockMin					= GetRectOnGrid( block, gridScale ).min;
+		int2 blockGridMinDelta			= (int2)math.round( (blockMin - gridMin) / gridScale );
+
+		return local + blockGridMinDelta;
 	}
 
 
