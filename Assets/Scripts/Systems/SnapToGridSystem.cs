@@ -44,12 +44,12 @@ public class SnapToGridSystem : DragSystemBase
 				SnapToGrid( block, grid, gridScale );
 
 				int2 gridPos		= ProjectOnGrid( block, grid, gridScale, new int2( 0, 0 ) );
-				bool bad			= gridPos.x < 0 || gridPos.y < 0;
+				bool outOfGrid		= gridPos.x < 0 || gridPos.y < 0;
 				Debug.Log( gridPos );
 
 				// Set Color
 				RenderMesh renderMesh			= EntityManager.GetSharedComponentData< RenderMesh >( block );
-				renderMesh.material.color		= bad ? Color.red : Color.gray;
+				renderMesh.material.color		= outOfGrid ? Color.red : Color.gray;
 
 				if (isDragFinish)
 					PlaceOnGrid( block );
@@ -59,9 +59,10 @@ public class SnapToGridSystem : DragSystemBase
 
 	int2 ProjectOnGrid( Entity block, Entity grid, float gridScale, int2 local )
 	{
-		float2 gridMin					= GetRectOnGrid( grid, gridScale ).min;
-		float2 blockMin					= GetRectOnGrid( block, gridScale ).min;
-		int2 blockGridMinDelta			= (int2)math.round( (blockMin - gridMin) / gridScale );
+		float2 blockSize				= WorldSizeOnGrid( block, grid );
+		float2 gridMin					= GetRectOnGrid( grid, grid ).min;
+		float2 blockSnappedMin			= GetRectOnGrid( block, grid ).min;
+		int2 blockGridMinDelta			= (int2)math.round( (blockSnappedMin - gridMin) / gridScale );
 
 		return local + blockGridMinDelta;
 	}
@@ -135,9 +136,9 @@ public class SnapToGridSystem : DragSystemBase
 		{
 			grid			= entity;
 			gridScale		= EntityManager.GetComponentData< Scale >( grid ).Value;
-			Rect rect		= GetRectOnGrid( block, gridScale );
+			Rect rect		= GetRectOnGrid( block, grid );
 
-			if (rect.Overlaps( GetRectOnGrid( grid, gridScale ) ))
+			if (rect.Overlaps( GetRectOnGrid( grid, grid ) ))
 				return true;
 		}
 		
@@ -147,14 +148,22 @@ public class SnapToGridSystem : DragSystemBase
 	}
 
 
-	Rect GetRectOnGrid( Entity block, float gridScale )
+	Rect GetRectOnGrid( Entity block, Entity grid )
 	{
 		Translation translation			= EntityManager.GetComponentData< Translation >( block );
-		Vector2 size_w					= WorldSizeOnGrid( block, gridScale );
+		Vector2 size_w					= WorldSizeOnGrid( block, grid );
 		Vector2 rectPos_w				= (Vector2)translation.Value.xy - size_w / 2;
 		Rect rect_w						= new Rect( rectPos_w, size_w );
 
 		return rect_w;
+	}
+
+
+	float2 WorldSizeOnGrid( Entity block, Entity grid )
+	{
+		float gridScale			= EntityManager.GetComponentData< Scale >( grid ).Value;
+
+		return WorldSizeOnGrid( block, gridScale );
 	}
 
 
