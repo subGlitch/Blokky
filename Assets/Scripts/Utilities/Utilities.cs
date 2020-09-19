@@ -86,6 +86,10 @@ public static class Utilities
 		ecb.DestroyEntity( entity );
 	}
 
+
+	public static Vector2	Mouse_w			=> Camera.main.ScreenToWorldPoint( Input.mousePosition );
+
+
 #endregion
 }
 

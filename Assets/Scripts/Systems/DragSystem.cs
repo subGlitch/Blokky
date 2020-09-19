@@ -6,9 +6,6 @@ using UnityEngine;
 
 public class DragSystem : DragSystemBase
 {
-	Vector2			Mouse_w			=> Camera.main.ScreenToWorldPoint( Input.mousePosition );
-
-
 	Vector2			_mouseDragLast_w;
 
 
@@ -39,14 +36,14 @@ public class DragSystem : DragSystemBase
 
 			case DragState.Continue:
 			case DragState.Finish:
-				DragContinue( Mouse_w - _mouseDragLast_w );
+				DragContinue( Utilities.Mouse_w - _mouseDragLast_w );
 				break;
 
 			default:
 				return;
 		}
 
-		_mouseDragLast_w		= Mouse_w;
+		_mouseDragLast_w		= Utilities.Mouse_w;
 	}
 
 

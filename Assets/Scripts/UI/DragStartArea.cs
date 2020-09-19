@@ -15,19 +15,33 @@ public class DragStartArea : MB_Singleton< DragStartArea >, IPointerDownHandler
 			Utilities.DestroyHierarchy( _selectedShape );
 
 		_selectedSize		= size;
-		_selectedShape		= CreateShape();
+		_selectedShape		= CreateShape( transform.position  );
 	}
 
 
 	public void OnPointerDown( PointerEventData eventData )
 	{
+		/*
+		Vector2 fingerOffset		=
+										Application.isMobilePlatform	?
+										new Vector2( 0, .5f )		:
+										Vector2.zero
+		;
+		*/
+		// This probably should be zero, if we are NOT on the mobile platform (see code above),
+		// ... but for the sake of similarity with the reference app let's leave it.
+		Vector2 fingerOffset		= new Vector2( 0, .5f );
+
+
+		Vector2 position			= Utilities.Mouse_w + fingerOffset;
+
 		if (_selectedShape != Entity.Null)
-			CreateShape( Flags.IsDraggable );
+			CreateShape( position, Flags.IsDraggable );
 	}
 
 
-	Entity CreateShape( Flags flags = Flags.None )
+	Entity CreateShape( Vector2 position, Flags flags = Flags.None )
 	=>
-		Factory.Instance.CreateBlock( transform.position, _selectedSize, flags );
+		Factory.Instance.CreateBlock( position, _selectedSize, flags );
 }
 
