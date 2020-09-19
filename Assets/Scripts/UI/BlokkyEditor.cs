@@ -5,6 +5,7 @@ public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 {
 	public static float		GridScale;
 	public static float		UiScale;
+	public static Painting	Painting;
 
 
 #pragma warning disable 0649
@@ -35,6 +36,14 @@ public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 			gridSize,
 			Flags.IsGrid
 		);
+	}
+
+
+	public void OnSave()
+	{
+		string json		= JsonUtility.ToJson( Painting );
+
+		Debug.Log( json );
 	}
 }
 
