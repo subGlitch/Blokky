@@ -3,6 +3,10 @@
 
 public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 {
+	public static float		GridScale;
+	public static float		UiScale;
+
+
 #pragma warning disable 0649
 
 	[SerializeField] RectTransform	_spaceForGrid;
@@ -14,17 +18,17 @@ public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 	public void Init( Vector2Int gridSize )
 	{
 		// Calc scales
-		float gridScale			= Grid.CalcScale( gridSize, _spaceForGrid );
-		float uiScale			= Grid.CalcScale( new Vector2Int( 5, 5 ), _dragStartArea );
+		GridScale			= Grid.CalcScale( gridSize, _spaceForGrid );
+		UiScale				= Grid.CalcScale( new Vector2Int( 5, 5 ), _dragStartArea );
 
 		// Init Grid
-		Factory.Instance.CreateBlock( _spaceForGrid.position, gridSize, gridScale, false );
+		Factory.Instance.CreateBlock( _spaceForGrid.position, gridSize, GridScale, false );
 
 		// UI selected block
-		Factory.Instance.CreateBlock( DragStartArea.Instance.gameObject.transform.position, new Vector2Int( 3, 2 ), uiScale, false );
+		Factory.Instance.CreateBlock( DragStartArea.Instance.gameObject.transform.position, new Vector2Int( 3, 2 ), UiScale, false );
 
 		// Test
-		Factory.Instance.CreateBlock( new Vector2( 0, -4 ), new Vector2Int( 3, 2 ), uiScale, true );
+		Factory.Instance.CreateBlock( new Vector2( 0, -4 ), new Vector2Int( 3, 2 ), UiScale, true );
 	}
 }
 

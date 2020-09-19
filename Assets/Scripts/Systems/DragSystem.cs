@@ -66,30 +66,23 @@ public class DragSystem : DragSystemBase
 
 
 	void DragContinue( Vector2 shift )
-	{
-		// Entity grid							= GetSingletonEntity< IsGrid >();								// Simple version
-		EntityQuery query						= GetEntityQuery( typeof(IsGrid) );			// Generalized approach (can have multiple grids)
-
-		using (NativeArray< Entity > grids		= query.ToEntityArray( Allocator.TempJob ))
+	=>
+		GetDraggable().ForEach(
+			(
+				Entity				draggable,
+				ref Translation		translation,
+				ref DragPosition	dragPosComponent,
+				ref Scale			scale
+			) =>
 		{
-			if (grids.Length == 0)
-				return;
+			float2 dragPosition		= dragPosComponent.Value + (float2)shift;
+			dragPosComponent		= new DragPosition( dragPosition );
 
-			GetDraggable().ForEach(
-				(
-					Entity draggable,
-					ref Translation translation,
-					ref DragPosition dragPosComponent
-				) =>
-			{
-				float2 dragPosition				= dragPosComponent.Value + (float2)shift;
-				dragPosComponent				= new DragPosition( dragPosition );
+			float3 position			= new float3( dragPosition, translation.Value.z );
+			translation				= new Translation{ Value = position };
 
-				float3 position					= new float3( dragPosition, translation.Value.z );
-				translation						= new Translation{ Value = position };
-			});
-		}
-	}
+			scale					= new Scale{ Value = BlokkyEditor.UiScale };
+		});
 
 
 	protected EntityQueryBuilder GetDraggable()		=> Entities.WithAll< IsDraggable >();

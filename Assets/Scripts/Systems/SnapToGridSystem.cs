@@ -58,6 +58,7 @@ public class SnapToGridSystem : DragSystemBase
 				Translation translation			= EntityManager.GetComponentData< Translation >( block );
 				translation						= new Translation{ Value = new float3( snappedPosition, translation.Value.z ) };
 				EntityManager.SetComponentData( block, translation );
+				EntityManager.SetComponentData( block, new Scale{ Value = gridScale } );
 
 				RenderMesh renderMesh			= EntityManager.GetSharedComponentData< RenderMesh >( block );
 				// renderMesh.material.color		= overlaps ? Color.blue : Color.gray;
