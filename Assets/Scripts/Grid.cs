@@ -1,11 +1,4 @@
-﻿using Unity.Mathematics;
-using UnityEngine;
-
-
-static class GridExtMethods
-{
-	public static float2 ToWorldSize( this int2 blockSize )		=> (float2)blockSize * Grid.LegoSize;
-}
+﻿using UnityEngine;
 
 
 public static class Grid
