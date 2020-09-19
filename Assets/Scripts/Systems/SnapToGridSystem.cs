@@ -35,43 +35,34 @@ public class SnapToGridSystem : DragSystemBase
 			foreach (Entity block in blocks)
 			{
 				// Find grid, overlapped by the block
-				if (!FindGridOverlappedBy( block, grids, out Entity grid, out float gridScale ))
+				if (FindGridOverlappedBy( block, grids, out Entity grid, out float gridScale ))
 				{
-					// No overlapping with grid
-					if (isDragFinish)
-						DestroyHierarchy( block );
-					continue;
+					// Calc snappedPosition
+					float2 snappedPosition				= CalcSnappedPosition( block, grid, gridScale );
+
+					// Check - is snapped block position is completely inside the grid
+					if (!IsOutOfGrid( block, grid, snappedPosition, gridScale, out RectInt rect_g ))
+					{
+						// Snap
+						Snap( block, snappedPosition, gridScale );
+
+						// Check - are there no other blocks on this place
+						bool isFree						= IsFree( grid, rect_g );
+
+						// Set Color
+						RenderMesh renderMesh			= EntityManager.GetSharedComponentData< RenderMesh >( block );
+						renderMesh.material.color		= !isFree ? Color.red : Color.gray;
+
+						if (isDragFinish && isFree)
+						{
+							PlaceOnGrid( block, grid, rect_g );
+							continue;
+						}
+					}
 				}
-
-				// Calc snappedPosition
-				float2 snappedPosition			= CalcSnappedPosition( block, grid, gridScale );
-
-				// Check - is snapped block position is completely inside the grid
-				if (IsOutOfGrid( block, grid, snappedPosition, gridScale, out RectInt rect_g ))
-				{
-					// Overlapping with grid, but snapped position is not completely inside the grid
-					if (isDragFinish)
-						DestroyHierarchy( block );
-					continue;
-				}
-
-				// Snap
-				Snap( block, snappedPosition, gridScale );
-
-				// Check - are there no other blocks on this place
-				bool isFree			= IsFree( grid, rect_g );
-
-				// Set Color
-				RenderMesh renderMesh			= EntityManager.GetSharedComponentData< RenderMesh >( block );
-				renderMesh.material.color		= !isFree ? Color.red : Color.gray;
 
 				if (isDragFinish)
-				{
-					if (isFree)
-						PlaceOnGrid( block, grid, rect_g );
-					else
-						DestroyHierarchy( block );
-				}
+					DestroyHierarchy( block );
 			}
 	}
 	
