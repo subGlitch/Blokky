@@ -1,10 +1,10 @@
 ﻿using System;
-using UnityEngine;
+using Unity.Mathematics;
 
 
 [Serializable]
 public class Painting
 {
-	public Vector2Int	gridSize;
+	public int2		gridSize;
 }
 

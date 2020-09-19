@@ -1,11 +1,13 @@
-﻿using UnityEngine;
+﻿using FullSerializer;
+using Unity.Mathematics;
+using UnityEngine;
 
 
 public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 {
 	public static float		GridScale;
 	public static float		UiScale;
-	public static Painting	Painting;
+	public static Painting	Painting		= new Painting();
 
 
 #pragma warning disable 0649
@@ -20,7 +22,7 @@ public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 	{
 		Canvas.ForceUpdateCanvases();
 
-		UiScale				= Grid.CalcScale( new Vector2Int( 6, 6 ), _dragStartArea );
+		UiScale			= Grid.CalcScale( new Vector2Int( 6, 6 ), _dragStartArea );
 	}
 
 
@@ -28,7 +30,8 @@ public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 	{
 		ShapeSelectors.Instance.Init();
 
-		GridScale			= Grid.CalcScale( gridSize, _spaceForGrid );
+		Painting.gridSize		= new int2( gridSize.x, gridSize.y );
+		GridScale				= Grid.CalcScale( gridSize, _spaceForGrid );
 
 		// Create Grid
 		Factory.Instance.CreateBlock(
@@ -41,7 +44,11 @@ public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 
 	public void OnSave()
 	{
-		string json		= JsonUtility.ToJson( Painting );
+		fsSerializer serializer		= new fsSerializer();
+
+		serializer.TrySerialize( typeof( Painting ), Painting, out fsData data ).AssertSuccessWithoutWarnings();
+
+		string json					= fsJsonPrinter.CompressedJson( data );
 
 		Debug.Log( json );
 	}
