@@ -36,29 +36,7 @@ public class SnapToGridSystem : DragSystemBase
 				if (!FindGridOverlappedBy( block, grids, out Entity grid, out float gridScale ))
 					continue;
 
-				float2 gridPos					= EntityManager.GetComponentData< Translation >( grid ).Value.xy;
-				float2 dragPos					= EntityManager.GetComponentData< DragPosition >( block ).Value;
-
-				float2 otnc_Grid				= OffsetToNearestCell( grid, gridScale );
-				float2 otnc_Block				= OffsetToNearestCell( block, gridScale );
-
-				// For snapping it doesn't matter which cell to take (here we taking nearest from block's center), so any cell will do
-				float2 anyCellOnGrid			= gridPos + otnc_Grid;
-				float2 anyCellOnBlock			= dragPos + otnc_Block;
-
-				float2 snapPositive				= (anyCellOnGrid - anyCellOnBlock).NegativeSafeMod( gridScale );
-				float2 snapNegative				= snapPositive - gridScale;
-				float2 snapNearest				= new float2(
-																snapPositive.x < snapNegative.x * (-1) ? snapPositive.x : snapNegative.x,
-																snapPositive.y < snapNegative.y * (-1) ? snapPositive.y : snapNegative.y
-				);
-
-				float2 snappedPosition			= dragPos + snapNearest;
-
-				Translation translation			= EntityManager.GetComponentData< Translation >( block );
-				translation						= new Translation{ Value = new float3( snappedPosition, translation.Value.z ) };
-				EntityManager.SetComponentData( block, translation );
-				EntityManager.SetComponentData( block, new Scale{ Value = gridScale } );
+				SnapToGrid( block, grid, gridScale );
 
 				if (Input.GetMouseButtonUp( 0 ))
 				{
@@ -69,6 +47,34 @@ public class SnapToGridSystem : DragSystemBase
 				RenderMesh renderMesh			= EntityManager.GetSharedComponentData< RenderMesh >( block );
 				// renderMesh.material.color		= overlaps ? Color.blue : Color.gray;
 			}
+	}
+
+
+	void SnapToGrid( Entity block, Entity grid, float gridScale )
+	{
+		float2 gridPos					= EntityManager.GetComponentData< Translation >( grid ).Value.xy;
+		float2 dragPos					= EntityManager.GetComponentData< DragPosition >( block ).Value;
+
+		float2 otnc_Grid				= OffsetToNearestCell( grid, gridScale );
+		float2 otnc_Block				= OffsetToNearestCell( block, gridScale );
+
+		// For snapping it doesn't matter which cell to take (here we taking nearest from block's center), so any cell will do
+		float2 anyCellOnGrid			= gridPos + otnc_Grid;
+		float2 anyCellOnBlock			= dragPos + otnc_Block;
+
+		float2 snapPositive				= (anyCellOnGrid - anyCellOnBlock).NegativeSafeMod( gridScale );
+		float2 snapNegative				= snapPositive - gridScale;
+		float2 snapNearest				= new float2(
+														snapPositive.x < snapNegative.x * (-1) ? snapPositive.x : snapNegative.x,
+														snapPositive.y < snapNegative.y * (-1) ? snapPositive.y : snapNegative.y
+		);
+
+		float2 snappedPosition			= dragPos + snapNearest;
+
+		Translation translation			= EntityManager.GetComponentData< Translation >( block );
+		translation						= new Translation{ Value = new float3( snappedPosition, translation.Value.z ) };
+		EntityManager.SetComponentData( block, translation );
+		EntityManager.SetComponentData( block, new Scale{ Value = gridScale } );
 	}
 
 
