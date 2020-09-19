@@ -35,7 +35,7 @@ public class DragSystem : DragSystemBase
 		{
 			case DragState.Start:		DragStart();											break;
 			case DragState.Continue:	DragContinue( Mouse_w - _mouseDragLast_w );		break;
-			case DragState.Finish:		DragFinish();											break;
+			case DragState.Finish:		/* Do nothing, this handled by SnapToGridSystem */		break;
 
 			default:					return;
 		}
@@ -53,14 +53,6 @@ public class DragSystem : DragSystemBase
 			) =>
 		{
 			EntityManager.AddComponentData( draggable, new DragPosition( translation.Value.xy ) );
-		});
-
-
-	void DragFinish()
-	=>
-		GetDraggable().ForEach( draggable =>
-		{
-			EntityManager.RemoveComponent< DragPosition >( draggable );
 		});
 
 

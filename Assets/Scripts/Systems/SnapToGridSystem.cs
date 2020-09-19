@@ -60,6 +60,12 @@ public class SnapToGridSystem : DragSystemBase
 				EntityManager.SetComponentData( block, translation );
 				EntityManager.SetComponentData( block, new Scale{ Value = gridScale } );
 
+				if (Input.GetMouseButtonUp( 0 ))
+				{
+					EntityManager.RemoveComponent< DragPosition >( block );
+					EntityManager.RemoveComponent< IsDraggable >( block );
+				}
+
 				RenderMesh renderMesh			= EntityManager.GetSharedComponentData< RenderMesh >( block );
 				// renderMesh.material.color		= overlaps ? Color.blue : Color.gray;
 			}
