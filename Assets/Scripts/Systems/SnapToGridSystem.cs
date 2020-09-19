@@ -35,7 +35,11 @@ public class SnapToGridSystem : DragSystemBase
 			foreach (Entity block in blocks)
 			{
 				if (!FindGridOverlappedBy( block, grids, out Entity grid, out float gridScale ))
+				{
+					if (Input.GetMouseButton( 1 ))
+						EntityManager.DestroyEntity( block );
 					continue;
+				}
 
 				SnapToGrid( block, grid, gridScale );
 
@@ -46,6 +50,13 @@ public class SnapToGridSystem : DragSystemBase
 				if (isDragFinish)
 					PlaceOnGrid( block );
 			}
+	}
+
+
+	Vector2Int ProjectOnGrid( Vector2Int local, float gridScale )
+	{
+		//float2 cell_lw		= 
+		return Vector2Int.zero;
 	}
 
 
@@ -87,20 +98,27 @@ public class SnapToGridSystem : DragSystemBase
 	// Offset from center of the block to nearest cell center
 	float2 OffsetToNearestCell( Entity block, float gridScale )
 	{
-		float2 blockSize_w				= WorldSizeOnGrid( block, gridScale );
-
-		// _l suffix - local (but scaled) coordinates >>>
-
-		float2 blockMin_l				= blockSize_w / (-2);
-		float2 localMinCell_l			= blockMin_l + gridScale / 2;
-
-		float2 blockCenter_l			= float2.zero;
-		float2 someCellCenter_l			= localMinCell_l;
-		float2 delta					= blockCenter_l - someCellCenter_l;
-
-		float2 offsetToNearestCell		= delta.NegativeSafeMod( gridScale );
+		float2 offsetToMinCell			= OffsetToMinCell( block, gridScale );
+		float2 offsetToNearestCell		= offsetToMinCell.NegativeSafeMod( gridScale );
 
 		return offsetToNearestCell;
+	}
+
+
+	float2 OffsetToMinCell( Entity block, float gridScale )
+	{
+		float2 blockSize_w				= WorldSizeOnGrid( block, gridScale );
+
+		// _lw suffix - local (relative to block's center), but scaled (so in world coordinates) >>>
+
+		float2 blockMin_lw				= blockSize_w / (-2);
+		float2 localMinCell_lw			= blockMin_lw + gridScale / 2;
+
+		float2 blockCenter_lw			= float2.zero;
+		float2 minCellCenter_lw			= localMinCell_lw;
+		float2 offset					= blockCenter_lw - minCellCenter_lw;
+
+		return offset;
 	}
 
 
