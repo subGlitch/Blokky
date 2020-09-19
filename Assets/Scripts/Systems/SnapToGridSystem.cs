@@ -20,6 +20,7 @@ public class SnapToGridSystem : DragSystemBase
 			So we can drag multiple blocks simultaneously and have multiple grids =)))
 		*/
 
+		bool isDragFinish						= Input.GetMouseButtonUp( 0 );
 
 		EntityQuery draggedQuery				= GetEntityQuery( typeof(DragPosition) );
 		if (draggedQuery.CalculateEntityCount() == 0)
@@ -38,15 +39,20 @@ public class SnapToGridSystem : DragSystemBase
 
 				SnapToGrid( block, grid, gridScale );
 
-				if (Input.GetMouseButtonUp( 0 ))
-				{
-					EntityManager.RemoveComponent< DragPosition >( block );
-					EntityManager.RemoveComponent< IsDraggable >( block );
-				}
-
+				// Set Color
 				RenderMesh renderMesh			= EntityManager.GetSharedComponentData< RenderMesh >( block );
 				// renderMesh.material.color		= overlaps ? Color.blue : Color.gray;
+
+				if (Input.GetMouseButtonUp( 0 ))
+					PlaceOnGrid( block );
 			}
+	}
+
+
+	void PlaceOnGrid( Entity block )
+	{
+		EntityManager.RemoveComponent< DragPosition >( block );
+		EntityManager.RemoveComponent< IsDraggable >( block );
 	}
 
 
