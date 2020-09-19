@@ -1,4 +1,5 @@
-﻿using FullSerializer;
+﻿using System.Linq;
+using FullSerializer;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
@@ -51,6 +52,10 @@ public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 
 	public void OnSave()
 	{
+		// According to the specification: "... набросанный (не пустой) уровень должен сохраняться в файл (json) ..."
+		if (!Painting.blocks.Any())
+			return;
+
 		fsSerializer serializer		= new fsSerializer();
 		serializer.TrySerialize( typeof( Painting ), Painting, out fsData data ).AssertSuccessWithoutWarnings();
 		string json					= fsJsonPrinter.CompressedJson( data );
