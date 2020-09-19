@@ -8,8 +8,7 @@ public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 
 	public void Init( Vector2Int gridSize )
 	{
-		
-		_spaceForGrid.GetWorldCorners();
+		Rect space		= _spaceForGrid.GetWorldRect();
 
 		Grid.SetGridSize( gridSize );
 
