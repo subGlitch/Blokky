@@ -43,13 +43,9 @@ public class SnapToGridSystem : DragSystemBase
 
 				SnapToGrid( block, grid, gridScale );
 
-				int2 gridPos		= ProjectOnGrid( block, grid, gridScale, new int2( 0, 0 ) );
-				bool outOfGrid		= gridPos.x < 0 || gridPos.y < 0;
-				Debug.Log( gridPos );
-
 				// Set Color
 				RenderMesh renderMesh			= EntityManager.GetSharedComponentData< RenderMesh >( block );
-				renderMesh.material.color		= outOfGrid ? Color.red : Color.gray;
+				// renderMesh.material.color		= outOfGrid ? Color.red : Color.gray;
 
 				if (isDragFinish)
 					PlaceOnGrid( block );
@@ -57,11 +53,13 @@ public class SnapToGridSystem : DragSystemBase
 	}
 
 
-	int2 ProjectOnGrid( Entity block, Entity grid, float gridScale, int2 local )
+	int2 ProjectOnGrid( Entity block, float2 blockSnappedPos, Entity grid, float gridScale, int2 local )
 	{
-		float2 blockSize				= WorldSizeOnGrid( block, grid );
 		float2 gridMin					= GetRectOnGrid( grid, grid ).min;
-		float2 blockSnappedMin			= GetRectOnGrid( block, grid ).min;
+
+		float2 blockSize				= WorldSizeOnGrid( block, grid );
+		float2 blockSnappedMin			= blockSnappedPos - blockSize / 2;
+
 		int2 blockGridMinDelta			= (int2)math.round( (blockSnappedMin - gridMin) / gridScale );
 
 		return local + blockGridMinDelta;
@@ -95,6 +93,11 @@ public class SnapToGridSystem : DragSystemBase
 		);
 
 		float2 snappedPosition			= dragPos + snapNearest;
+
+		int2 min_g						= ProjectOnGrid( block, snappedPosition, grid, gridScale, new int2( 0, 0 ) );
+		bool outOfGrid					= min_g.x < 0 || min_g.y < 0;
+		if (outOfGrid)
+			return;
 
 		Translation translation			= EntityManager.GetComponentData< Translation >( block );
 		translation						= new Translation{ Value = new float3( snappedPosition, translation.Value.z ) };
@@ -157,6 +160,9 @@ public class SnapToGridSystem : DragSystemBase
 
 		return rect_w;
 	}
+
+
+	float2 WorldSizeOnGrid( Entity grid )		=> WorldSizeOnGrid( grid, grid );
 
 
 	float2 WorldSizeOnGrid( Entity block, Entity grid )
