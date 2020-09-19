@@ -17,6 +17,7 @@ public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 
 		Factory.Instance.CreateBlock( center, gridSize, false );
 		Factory.Instance.CreateBlock( Vector2.one, new Vector2Int( 3, 2 ), true );
+		Factory.Instance.CreateBlock( DragStartArea.Instance.gameObject.transform.position, new Vector2Int( 3, 2 ), false );
 	}
 }
 

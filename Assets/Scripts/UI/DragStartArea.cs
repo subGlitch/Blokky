@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
+﻿using UnityEngine.EventSystems;
 
 
-public class DragStartArea : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
+public class DragStartArea : MB_Singleton< DragStartArea >, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
 	public void OnPointerDown(PointerEventData eventData)
 	{
