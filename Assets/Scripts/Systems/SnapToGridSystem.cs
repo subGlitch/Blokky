@@ -59,7 +59,7 @@ public class SnapToGridSystem : DragSystemBase
 				// renderMesh.material.color		= outOfGrid ? Color.red : Color.gray;
 
 				if (isDragFinish)
-					PlaceOnGrid( block );
+					PlaceOnGrid( block, grid );
 			}
 	}
 	
@@ -72,8 +72,11 @@ public class SnapToGridSystem : DragSystemBase
 	}
 
 
-	void PlaceOnGrid( Entity block )
+	void PlaceOnGrid( Entity block, Entity grid )
 	{
+		DynamicBuffer< Child> children		= EntityManager.GetBuffer< Child >( grid );
+		EntityManager.AddComponent< IsTaken >( children[ 0 ].Value );
+
 		EntityManager.RemoveComponent< DragPosition >( block );
 		EntityManager.RemoveComponent< IsDraggable >( block );
 	}
