@@ -33,22 +33,21 @@ public class SnapToGridSystem : DragSystemBase
 		using (NativeArray< Entity > grids		= gridsQuery	.ToEntityArray( Allocator.TempJob ))
 			foreach (Entity block in blocks)
 			{
-				Entity grid						= FindGridOverlappedBy( block, grids );
-				if (grid == Entity.Null)
+				if (!FindGridOverlappedBy( block, grids, out Entity grid, out float gridScale ))
 					continue;
 
 				float2 gridPos					= EntityManager.GetComponentData< Translation >( grid ).Value.xy;
 				float2 dragPos					= EntityManager.GetComponentData< DragPosition >( block ).Value;
 
-				float2 otnc_Grid				= OffsetToNearestCell( grid );
-				float2 otnc_Block				= OffsetToNearestCell( block );
+				float2 otnc_Grid				= OffsetToNearestCell( grid, gridScale );
+				float2 otnc_Block				= OffsetToNearestCell( block, gridScale );
 
 				// For snapping it doesn't matter which cell to take (here we taking nearest from block's center), so any cell will do
 				float2 anyCellOnGrid			= gridPos + otnc_Grid;
 				float2 anyCellOnBlock			= dragPos + otnc_Block;
 
-				float2 snapPositive				= (anyCellOnGrid - anyCellOnBlock).NegativeSafeMod( Grid.LegoSize );
-				float2 snapNegative				= snapPositive - Grid.LegoSize;
+				float2 snapPositive				= (anyCellOnGrid - anyCellOnBlock).NegativeSafeMod( gridScale );
+				float2 snapNegative				= snapPositive - gridScale;
 				float2 snapNearest				= new float2(
 																snapPositive.x < snapNegative.x * (-1) ? snapPositive.x : snapNegative.x,
 																snapPositive.y < snapNegative.y * (-1) ? snapPositive.y : snapNegative.y
@@ -67,41 +66,47 @@ public class SnapToGridSystem : DragSystemBase
 
 
 	// Offset from center of the block to nearest cell center
-	float2 OffsetToNearestCell( Entity block )
+	float2 OffsetToNearestCell( Entity block, float gridScale )
 	{
-		float2 blockSize_w				= WorldSize( block );
+		float2 blockSize_w				= WorldSizeOnGrid( block, gridScale );
 
 		// _l suffix - local (but scaled) coordinates >>>
 
 		float2 blockMin_l				= blockSize_w / (-2);
-		float2 localMinCell_l			= blockMin_l + Grid.LegoSize / 2;
+		float2 localMinCell_l			= blockMin_l + gridScale / 2;
 
 		float2 blockCenter_l			= float2.zero;
 		float2 someCellCenter_l			= localMinCell_l;
 		float2 delta					= blockCenter_l - someCellCenter_l;
 
-		float2 offsetToNearestCell		= delta.NegativeSafeMod( Grid.LegoSize );
+		float2 offsetToNearestCell		= delta.NegativeSafeMod( gridScale );
 
 		return offsetToNearestCell;
 	}
 
 
-	Entity FindGridOverlappedBy( Entity block, NativeArray< Entity > grids )
+	bool FindGridOverlappedBy( Entity block, NativeArray< Entity > grids, out Entity grid, out float gridScale )
 	{
-		Rect rect		= GetRect( block );
+		foreach (Entity entity in grids)
+		{
+			grid			= entity;
+			gridScale		= EntityManager.GetComponentData< Scale >( grid ).Value;
+			Rect rect		= GetRectOnGrid( block, gridScale );
 
-		foreach (Entity grid in grids)
-			if (rect.Overlaps( GetRect( grid ) ))
-				return grid;
+			if (rect.Overlaps( GetRectOnGrid( grid, gridScale ) ))
+				return true;
+		}
 		
-		return Entity.Null;;
+		grid			= Entity.Null;
+		gridScale		= 0;
+		return false;
 	}
 
 
-	Rect GetRect( Entity block )
+	Rect GetRectOnGrid( Entity block, float gridScale )
 	{
 		Translation translation			= EntityManager.GetComponentData< Translation >( block );
-		Vector2 size_w					= WorldSize( block );
+		Vector2 size_w					= WorldSizeOnGrid( block, gridScale );
 		Vector2 rectPos_w				= (Vector2)translation.Value.xy - size_w / 2;
 		Rect rect_w						= new Rect( rectPos_w, size_w );
 
@@ -109,12 +114,11 @@ public class SnapToGridSystem : DragSystemBase
 	}
 
 
-	float2 WorldSize( Entity block )
+	float2 WorldSizeOnGrid( Entity block, float gridScale )
 	{
 		int2 blockSize			= EntityManager.GetComponentData< BlockSize >( block ).Value;
-		float scale				= EntityManager.GetComponentData< Scale >( block ).Value;
 
-		return (float2)blockSize * scale;
+		return (float2)blockSize * gridScale;
 	}
 }
 
