@@ -80,10 +80,8 @@ public class Factory : MB_Singleton< Factory >
 			entityManager.AddComponentData( lego, new Parent{ Value = parent } );
 			entityManager.AddComponentData( lego, new LocalToParent() );
 
-			int2 gridPos					= new int2( x, y );
 			float3 localBlockMin			= (float3)(Vector3)(Vector2)blockSize / -2;
 			float3 localPos					= localBlockMin + new float3( x, y, 0 ) + (float3).5f;
-			entityManager.AddComponentData( lego, new LegoLocalPosition( gridPos ) );
 			entityManager.SetComponentData( lego, new Translation { Value = localPos } );
 
 			entityManager.SetSharedComponentData( lego, renderMesh );
