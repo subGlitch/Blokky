@@ -1,6 +1,7 @@
 ﻿using FullSerializer;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 public class BlokkyEditor : MB_Singleton< BlokkyEditor >
@@ -12,9 +13,10 @@ public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 
 #pragma warning disable 0649
 
+	[SerializeField] string			_saveFolder					= "D:/";
 	[SerializeField] RectTransform	_spaceForGrid;
 	[SerializeField] RectTransform	_dragStartArea;
-	[SerializeField] string			_saveFolder					= "D:/";
+	[SerializeField] Button			_defaultShape;
 
 #pragma warning restore 0649
 
@@ -29,8 +31,7 @@ public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 
 	public void Init( Vector2Int gridSize )
 	{
-		ShapeSelectors.Instance.Init();
-
+		// Set gridSize
 		Painting.gridSize		= new int2( gridSize.x, gridSize.y );
 		GridScale				= Grid.CalcScale( gridSize, _spaceForGrid );
 
@@ -40,6 +41,11 @@ public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 			gridSize,
 			Flags.IsGrid
 		);
+
+		// Init shape selectors
+		ShapeSelectors.Instance.Init();
+		_defaultShape.onClick.Invoke();
+		_defaultShape.Select();
 	}
 
 

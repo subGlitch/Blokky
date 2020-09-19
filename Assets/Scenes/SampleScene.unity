@@ -426,8 +426,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d83a9aa4b4e858498db3efc92be1acb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _saveFolder: D:/
   _spaceForGrid: {fileID: 230184951}
   _dragStartArea: {fileID: 151162598}
+  _defaultShape: {fileID: 528639875}
 --- !u!1 &269142154
 GameObject:
   m_ObjectHideFlags: 0
