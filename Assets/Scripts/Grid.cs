@@ -17,27 +17,25 @@ public static class Grid
 	static float			LegoPrefabSize			=> 1;		// Lego prefab has size of 1 unit
 	
 
-	public static void SetGridSize( Vector2Int gridSize )
+	public static Vector2 SetGridSize( Vector2Int gridSize, Rect availableSpace_w )
 	{
-		Vector2 gridSize_w			= CalcGridWorldSize( gridSize );
+		Rect rect_w				= CalcGridWorldRect( gridSize, availableSpace_w );
 
-		float legoSize_w			= gridSize_w.x / gridSize.x;
-		float legoPrefabSize_w		= 1;
-		LegoScale					= legoSize_w / legoPrefabSize_w;
+		float legoSize_w		= rect_w.size.x / gridSize.x;
+		LegoScale				= legoSize_w / LegoPrefabSize;
+
+		return rect_w.center;
 	}
 
 
-	static Vector2 CalcGridWorldSize( Vector2Int gridSize )
+	static Rect CalcGridWorldRect( Vector2Int gridSize, Rect availableSpace_w )
 	{
-		Camera mainCamera			= Camera.main;
+		Vector2 size		= gridSize;
+		Vector2 scaleXY		= availableSpace_w.size / size;
+		float scale			= Mathf.Min( scaleXY.x, scaleXY.y );
+		size				*= scale;
 
-		float screenWorldHeight		= mainCamera.orthographicSize * 2;
-		float screenWorldWidth		= screenWorldHeight * mainCamera.aspect;
-
-		float girdWorldWidth		= screenWorldWidth;
-		float girdWorldHeight		= girdWorldWidth * gridSize.y / gridSize.x;
-
-		return new Vector2( girdWorldWidth, girdWorldHeight );
+		return new Rect { size = size, center = availableSpace_w.center };		// Keep this order: size first
 	}
 }
 
