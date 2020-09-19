@@ -1,4 +1,5 @@
-﻿using Unity.Collections;
+﻿using System.Collections.Generic;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Rendering;
@@ -131,6 +132,12 @@ public class SnapToGridSystem : DragSystemBase
 
 		Translation translation			= EntityManager.GetComponentData< Translation >( block );
 		EntityManager.SetComponentData( block, new Translation{ Value = new float3( translation.Value.xy, -1 ) } );
+
+		int2 blockPos		= new int2( rect_g.xMin, rect_g.yMin );
+		int2 blockSize		= new int2( rect_g.size.x, rect_g.size.y );
+		if (!BlokkyEditor.Painting.blocks.TryGetValue( blockSize, out var blocks ))
+			BlokkyEditor.Painting.blocks[ blockSize ] = blocks = new List<int2>();
+		blocks.Add( blockPos );
 	}
 
 
