@@ -36,7 +36,7 @@ public class SnapToGridSystem : DragSystemBase
 			{
 				if (!FindGridOverlappedBy( block, grids, out Entity grid, out float gridScale ))
 				{
-					if (Input.GetMouseButton( 1 ))
+					if (isDragFinish)
 						EntityManager.DestroyEntity( block );
 					continue;
 				}
