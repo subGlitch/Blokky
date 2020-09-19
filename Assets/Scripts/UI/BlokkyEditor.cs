@@ -35,12 +35,6 @@ public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 			gridSize,
 			Flags.IsGrid
 		);
-
-		// UI selected shape
-		Factory.Instance.CreateBlock(
-			DragStartArea.Instance.gameObject.transform.position,
-			new Vector2Int( 3, 2 )
-		);
 	}
 }
 

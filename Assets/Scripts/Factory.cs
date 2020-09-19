@@ -17,7 +17,7 @@ public class Factory : MB_Singleton< Factory >
 #pragma warning restore 0649
 
 
-	public void CreateBlock( Vector2 position, Vector2Int size, Flags flags = Flags.None )
+	public Entity CreateBlock( Vector2 position, Vector2Int size, Flags flags = Flags.None )
 	{
 		CreateBlockParent(
 			position,
@@ -29,6 +29,8 @@ public class Factory : MB_Singleton< Factory >
 		);
 
 		CreateBlockChildren( parent, size, cells, renderMesh );
+
+		return parent;
 	}
 
 

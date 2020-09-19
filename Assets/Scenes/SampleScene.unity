@@ -588,7 +588,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 329928928}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 329928930}
+        m_TargetAssemblyTypeName: ShapeSelector, Assembly-CSharp
+        m_MethodName: OnSelect
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &329928928
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1360,7 +1372,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 528639876}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 528639878}
+        m_TargetAssemblyTypeName: ShapeSelector, Assembly-CSharp
+        m_MethodName: OnSelect
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &528639876
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1588,7 +1612,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 684709019}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 684709021}
+        m_TargetAssemblyTypeName: ShapeSelector, Assembly-CSharp
+        m_MethodName: OnSelect
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &684709019
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1932,7 +1968,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 846699666}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 846699664}
+        m_TargetAssemblyTypeName: ShapeSelector, Assembly-CSharp
+        m_MethodName: OnSelect
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &846699666
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2124,7 +2172,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 938775431}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 938775433}
+        m_TargetAssemblyTypeName: ShapeSelector, Assembly-CSharp
+        m_MethodName: OnSelect
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &938775431
 MonoBehaviour:
   m_ObjectHideFlags: 0

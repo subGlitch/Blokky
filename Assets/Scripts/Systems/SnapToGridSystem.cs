@@ -62,7 +62,7 @@ public class SnapToGridSystem : DragSystemBase
 				}
 
 				if (isDragFinish)
-					DestroyHierarchy( block );
+					Utilities.DestroyHierarchy( block );
 			}
 	}
 	
@@ -131,24 +131,6 @@ public class SnapToGridSystem : DragSystemBase
 
 		Translation translation			= EntityManager.GetComponentData< Translation >( block );
 		EntityManager.SetComponentData( block, new Translation{ Value = new float3( translation.Value.xy, -1 ) } );
-	}
-
-
-	void DestroyHierarchy( Entity entity )
-	{
-		if (EntityManager.HasComponent< Child >( entity ))
-		{
-			DynamicBuffer< Child > children		= EntityManager.GetBuffer< Child >( entity );
-
-			for (int i = 0; i < children.Length; i ++)
-			{
-				Entity child		= children[ i ].Value;
-				DestroyHierarchy( child );
-				PostUpdateCommands.DestroyEntity( child );
-			}
-		}
-
-		PostUpdateCommands.DestroyEntity( entity );
 	}
 
 

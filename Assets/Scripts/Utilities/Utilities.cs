@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.CompilerServices;
+using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Transforms;
 using UnityEngine;
 
 
@@ -59,6 +61,29 @@ public static class Utilities
 		Debug.LogFormat( text );
 
 		return text;
+	}
+
+
+	public static void DestroyHierarchy( Entity entity )
+	{
+		var ecb			= World.DefaultGameObjectInjectionWorld
+												.GetOrCreateSystem< EndSimulationEntityCommandBufferSystem >().CreateCommandBuffer();
+
+		EntityManager entityManager			= World.DefaultGameObjectInjectionWorld.EntityManager;
+
+		if (entityManager.HasComponent< Child >( entity ))
+		{
+			DynamicBuffer< Child > children		= entityManager.GetBuffer< Child >( entity );
+
+			for (int i = 0; i < children.Length; i ++)
+			{
+				Entity child		= children[ i ].Value;
+				DestroyHierarchy( child );
+				ecb.DestroyEntity( child );
+			}
+		}
+
+		ecb.DestroyEntity( entity );
 	}
 
 #endregion

@@ -27,5 +27,8 @@ public class ShapeSelector : MonoBehaviour
 	{
         Factory.Instance.CreateBlock( transform.position, _size );
 	}
+
+
+	public void OnSelect()		=> DragStartArea.Instance.SelectShape( _size );
 }
 
