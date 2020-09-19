@@ -15,11 +15,17 @@ public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 #pragma warning restore 0649
 
 
+	void Start()
+	{
+		Canvas.ForceUpdateCanvases();
+
+		UiScale				= Grid.CalcScale( new Vector2Int( 5, 5 ), _dragStartArea );
+	}
+
+
 	public void Init( Vector2Int gridSize )
 	{
-		// Calc scales
 		GridScale			= Grid.CalcScale( gridSize, _spaceForGrid );
-		UiScale				= Grid.CalcScale( new Vector2Int( 5, 5 ), _dragStartArea );
 
 		// Create Grid
 		Factory.Instance.CreateBlock(
