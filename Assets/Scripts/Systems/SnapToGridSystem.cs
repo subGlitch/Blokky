@@ -107,17 +107,10 @@ public class SnapToGridSystem : DragSystemBase
 
 		for (int y = rect_g.yMin; y < rect_g.yMax; y ++)
 		for (int x = rect_g.xMin; x < rect_g.xMax; x ++)
-		{
-			// EntityManager.AddComponent< IsTaken >( children[ 0 ].Value );
-
-			PostUpdateCommands.AddComponent( cells[ y * gridSize.x + x ].Value, new Scale{ Value = .7f } );
-		}
-	
+			PostUpdateCommands.AddComponent< IsTaken >( cells[ y * gridSize.x + x ].Value );
 
 		EntityManager.RemoveComponent< DragPosition >( block );
 		EntityManager.RemoveComponent< IsDraggable >( block );
-
-		DestroyHierarchy( block );
 	}
 
 
