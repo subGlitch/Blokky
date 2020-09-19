@@ -43,7 +43,9 @@ public class Factory : MB_Singleton< Factory >
 		// Create entity
         EntityManager entityManager			= World.DefaultGameObjectInjectionWorld.EntityManager;
 		block								= entityManager.CreateEntity();
+#if UNITY_EDITOR
 		entityManager.SetName( block, "Block" );
+#endif
 
 		// Add components
 		entityManager.AddComponent< LocalToWorld >( block );
