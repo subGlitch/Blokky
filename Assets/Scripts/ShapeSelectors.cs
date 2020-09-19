@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 
 
-public class ShapeSelectors : MonoBehaviour
+public class ShapeSelectors : MB_Singleton< ShapeSelectors >
 {
-	void Start()
+	public void Init()
 	{
 		foreach (Transform child in transform)
 			child.GetComponent< ShapeSelector >().Resize();

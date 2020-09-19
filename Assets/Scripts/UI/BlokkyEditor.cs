@@ -25,6 +25,8 @@ public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 
 	public void Init( Vector2Int gridSize )
 	{
+		ShapeSelectors.Instance.Init();
+
 		GridScale			= Grid.CalcScale( gridSize, _spaceForGrid );
 
 		// Create Grid
