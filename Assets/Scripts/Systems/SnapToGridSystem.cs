@@ -36,12 +36,23 @@ public class SnapToGridSystem : DragSystemBase
 			{
 				if (!FindGridOverlappedBy( block, grids, out Entity grid, out float gridScale ))
 				{
+					// No overlapping with grid
 					if (isDragFinish)
 						EntityManager.DestroyEntity( block );
 					continue;
 				}
 
-				SnapToGrid( block, grid, gridScale );
+				float2 snappedPosition			= CalcSnappedPosition( block, grid, gridScale );
+
+				if (IsOutOfGrid( block, grid, snappedPosition, gridScale ))
+				{
+					// Overlapping with grid, but snapped position is not completely inside the grid
+					if (isDragFinish)
+						EntityManager.DestroyEntity( block );
+					continue;
+				}
+
+				Snap( block, snappedPosition, gridScale );
 
 				// Set Color
 				RenderMesh renderMesh			= EntityManager.GetSharedComponentData< RenderMesh >( block );
@@ -51,18 +62,13 @@ public class SnapToGridSystem : DragSystemBase
 					PlaceOnGrid( block );
 			}
 	}
-
-
-	int2 ProjectOnGrid( Entity block, float2 blockSnappedPos, Entity grid, float gridScale, int2 local )
+	
+	void Snap( Entity block, float2 snappedPosition, float gridScale )
 	{
-		float2 gridMin					= GetRectOnGrid( grid, grid ).min;
-
-		float2 blockSize				= WorldSizeOnGrid( block, grid );
-		float2 blockSnappedMin			= blockSnappedPos - blockSize / 2;
-
-		int2 blockGridMinDelta			= (int2)math.round( (blockSnappedMin - gridMin) / gridScale );
-
-		return local + blockGridMinDelta;
+		Translation translation			= EntityManager.GetComponentData< Translation >( block );
+		translation						= new Translation{ Value = new float3( snappedPosition, translation.Value.z ) };
+		EntityManager.SetComponentData( block, translation );
+		EntityManager.SetComponentData( block, new Scale{ Value = gridScale } );
 	}
 
 
@@ -73,7 +79,27 @@ public class SnapToGridSystem : DragSystemBase
 	}
 
 
-	void SnapToGrid( Entity block, Entity grid, float gridScale )
+	bool IsOutOfGrid( Entity block, Entity grid, float2 snappedPosition, float gridScale )
+	{
+		int2 blockSize		= EntityManager.GetComponentData< BlockSize >( block ).Value;
+		int2 gridSize		= EntityManager.GetComponentData< BlockSize >( grid ).Value;
+
+		int2 blockMin		= int2.zero;
+		int2 blockMax		= blockSize - 1;
+
+		int2 min_g			= ProjectOnGrid( block, snappedPosition, grid, gridScale, blockMin );
+		int2 max_g			= ProjectOnGrid( block, snappedPosition, grid, gridScale, blockMax );
+
+		return
+			min_g.x < 0				||
+			min_g.y < 0				||
+			max_g.x >= gridSize.x	||
+			max_g.y >= gridSize.y
+		;
+	}
+
+
+	float2 CalcSnappedPosition( Entity block, Entity grid, float gridScale )
 	{
 		float2 gridPos					= EntityManager.GetComponentData< Translation >( grid ).Value.xy;
 		float2 dragPos					= EntityManager.GetComponentData< DragPosition >( block ).Value;
@@ -94,19 +120,24 @@ public class SnapToGridSystem : DragSystemBase
 
 		float2 snappedPosition			= dragPos + snapNearest;
 
-		int2 min_g						= ProjectOnGrid( block, snappedPosition, grid, gridScale, new int2( 0, 0 ) );
-		bool outOfGrid					= min_g.x < 0 || min_g.y < 0;
-		if (outOfGrid)
-			return;
-
-		Translation translation			= EntityManager.GetComponentData< Translation >( block );
-		translation						= new Translation{ Value = new float3( snappedPosition, translation.Value.z ) };
-		EntityManager.SetComponentData( block, translation );
-		EntityManager.SetComponentData( block, new Scale{ Value = gridScale } );
+		return snappedPosition;
 	}
 
 
 	// Offset from center of the block to nearest cell center
+	int2 ProjectOnGrid( Entity block, float2 blockSnappedPos, Entity grid, float gridScale, int2 local )
+	{
+		float2 gridMin					= GetRectOnGrid( grid, grid ).min;
+
+		float2 blockSize				= WorldSizeOnGrid( block, grid );
+		float2 blockSnappedMin			= blockSnappedPos - blockSize / 2;
+
+		int2 blockGridMinDelta			= (int2)math.round( (blockSnappedMin - gridMin) / gridScale );
+
+		return local + blockGridMinDelta;
+	}
+
+
 	float2 OffsetToNearestCell( Entity block, float gridScale )
 	{
 		float2 offsetToMinCell			= OffsetToMinCell( block, gridScale );
