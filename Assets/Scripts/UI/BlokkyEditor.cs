@@ -15,9 +15,9 @@ public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 		Rect availableSpace		= _spaceForGrid.GetWorldRect();
 		Vector2 center			= Grid.SetGridSize( gridSize, availableSpace );
 
-		Factory.Instance.CreateBlock( center, gridSize, false );
-		Factory.Instance.CreateBlock( Vector2.one, new Vector2Int( 3, 2 ), true );
-		Factory.Instance.CreateBlock( DragStartArea.Instance.gameObject.transform.position, new Vector2Int( 3, 2 ), false );
+		Factory.Instance.CreateBlock( center, gridSize, Grid.LegoScale, false );
+		Factory.Instance.CreateBlock( Vector2.one, new Vector2Int( 3, 2 ), Grid.LegoScale, true );
+		Factory.Instance.CreateBlock( DragStartArea.Instance.gameObject.transform.position, new Vector2Int( 3, 2 ), Grid.LegoScale, false );
 	}
 }
 

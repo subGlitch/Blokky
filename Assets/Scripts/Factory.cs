@@ -17,9 +17,9 @@ public class Factory : MB_Singleton< Factory >
 #pragma warning restore 0649
 
 
-	public void CreateBlock( Vector2 position, Vector2Int size, bool isDraggable )
+	public void CreateBlock( Vector2 position, Vector2Int size, float scale, bool isDraggable )
 	{
-		CreateBlockParent( position, size, isDraggable, out Entity parent, out RenderMesh renderMesh );
+		CreateBlockParent( position, size, scale, isDraggable, out Entity parent, out RenderMesh renderMesh );
 
 		CreateBlockChildren( parent, size, renderMesh );
 	}
@@ -28,6 +28,7 @@ public class Factory : MB_Singleton< Factory >
 	void CreateBlockParent(
 			Vector2				position,
 			Vector2Int			size,
+			float				scale,
 			bool				isDraggable,
 			out Entity			block,
 			out RenderMesh		renderMesh
@@ -50,7 +51,7 @@ public class Factory : MB_Singleton< Factory >
 		// Add components
 		entityManager.AddComponent< LocalToWorld >( block );
 		entityManager.AddComponentData( block, new Translation{ Value = position3D } );
-		entityManager.AddComponentData( block, new Scale { Value = Grid.LegoScale } );
+		entityManager.AddComponentData( block, new Scale { Value = scale } );
 		entityManager.AddComponentData( block, new BlockSize( new int2( size.x, size.y ) ) );
 		if (isDraggable)
 			entityManager.AddComponent< IsDraggable >( block );
