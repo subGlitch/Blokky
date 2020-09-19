@@ -243,9 +243,6 @@ public class SnapToGridSystem : DragSystemBase
 	}
 
 
-	float2 WorldSizeOnGrid( Entity grid )		=> WorldSizeOnGrid( grid, grid );
-
-
 	float2 WorldSizeOnGrid( Entity block, Entity grid )
 	{
 		float gridScale			= EntityManager.GetComponentData< Scale >( grid ).Value;
