@@ -1,13 +1,10 @@
 ﻿using UnityEngine;
 
 
-public class Main : MonoBehaviour
+public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 {
-	void Start()
+	public void Init( Vector2Int gridSize )
 	{
-		Vector2Int gridSize			= new Vector2Int( 17, 17 );
-		//Vector2Int gridSize		= new Vector2Int( 5, 5 );
-
 		Grid.SetGridSize( gridSize );
 
 		Factory.Instance.CreateBlock( Vector2.zero, gridSize, false );
