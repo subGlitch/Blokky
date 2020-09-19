@@ -10,14 +10,19 @@ public static class Grid
 	static float			LegoPrefabSize			=> 1;		// Lego prefab has size of 1 unit
 	
 
-	public static Vector2 SetGridSize( Vector2Int gridSize, Rect availableSpace_w )
+	public static void SetGridSize( Vector2Int gridSize, RectTransform space )
 	{
-		Rect rect_w				= CalcGridWorldRect( gridSize, availableSpace_w );
+		LegoScale		= CalcScale( gridSize, space );
+	}
 
-		float legoSize_w		= rect_w.size.x / gridSize.x;
-		LegoScale				= legoSize_w / LegoPrefabSize;
 
-		return rect_w.center;
+	public static float CalcScale( Vector2Int gridSize, RectTransform space )
+	{
+		Rect availableSpace_w		= space.GetWorldRect();
+		Rect rect_w					= CalcGridWorldRect( gridSize, availableSpace_w );
+		float legoSize_w			= rect_w.size.x / gridSize.x;
+
+		return legoSize_w / LegoPrefabSize;
 	}
 
 

@@ -371,6 +371,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _spaceForGrid: {fileID: 949891745}
+  _dragStartArea: {fileID: 151162598}
 --- !u!1 &358609862
 GameObject:
   m_ObjectHideFlags: 0
