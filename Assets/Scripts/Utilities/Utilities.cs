@@ -1,19 +1,12 @@
 ﻿using System;
+using System.IO;
+using System.Runtime.CompilerServices;
 using Unity.Mathematics;
 using UnityEngine;
 
 
 public static class Utilities
 {
-	public static T SingletonPattern< T >( T @this, T instance ) where T : class
-	{
-		if (instance != null)
-			throw new Exception( $"Singleton pattern violation: instance of class { @this.GetType().Name } already exists!" );
-		
-		return @this;
-	}
-
-
 #region Math
 
 	// https://stackoverflow.com/questions/1082917/mod-of-negative-number-is-melting-my-brain
@@ -21,6 +14,15 @@ public static class Utilities
 	public static float2	NegativeSafeMod( this float2 x, float m )			=> (x % m + m) % m;
 
 #endregion
+#region Other
+
+	public static T SingletonPattern< T >( T @this, T instance ) where T : class
+	{
+		if (instance != null)
+			throw new Exception( $"Singleton pattern violation: instance of class { @this.GetType().Name } already exists!" );
+		
+		return @this;
+	}
 
 
 	public static Rect GetWorldRect( this RectTransform rt )
@@ -40,5 +42,25 @@ public static class Utilities
 
 		return new Rect( min, max - min );
 	}
+
+
+	public static string Log(
+			string text		= "",
+
+			[CallerFilePath]	string	file		= "",
+			[CallerMemberName]	string	member		= "",
+			[CallerLineNumber]	int		line		= 0
+		)
+	{
+		// https://stackoverflow.com/a/16295463/4830242
+
+		text		= $"{Path.GetFileName(file)}_{member}({line}): {text}";
+
+		Debug.LogFormat( text );
+
+		return text;
+	}
+
+#endregion
 }
 
