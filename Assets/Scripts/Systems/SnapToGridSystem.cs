@@ -63,6 +63,7 @@ public class SnapToGridSystem : DragSystemBase
 			}
 	}
 	
+
 	bool IsOutOfGrid( Entity block, Entity grid, float2 snappedPosition, float gridScale, out RectInt rect_g )
 	{
 		int2 blockSize		= EntityManager.GetComponentData< BlockSize >( block ).Value;
@@ -77,8 +78,8 @@ public class SnapToGridSystem : DragSystemBase
 		rect_g				= new RectInt(
 											min_g.x,
 											min_g.y,
-											max_g.x - min_g.x,
-											max_g.y - min_g.y
+											max_g.x - min_g.x + 1,
+											max_g.y - min_g.y + 1
 		);
 
 		return
@@ -104,8 +105,8 @@ public class SnapToGridSystem : DragSystemBase
 		int2 gridSize					= EntityManager.GetComponentData< BlockSize >( grid ).Value;
 		DynamicBuffer< Cell > cells		= EntityManager.GetBuffer< Cell >( grid );
 
-		for (int y = rect_g.yMin; y <= rect_g.yMax; y ++)
-		for (int x = rect_g.xMin; x <= rect_g.xMax; x ++)
+		for (int y = rect_g.yMin; y < rect_g.yMax; y ++)
+		for (int x = rect_g.xMin; x < rect_g.xMax; x ++)
 		{
 			// EntityManager.AddComponent< IsTaken >( children[ 0 ].Value );
 
