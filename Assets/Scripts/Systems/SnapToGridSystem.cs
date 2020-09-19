@@ -126,8 +126,11 @@ public class SnapToGridSystem : DragSystemBase
 		for (int x = rect_g.xMin; x < rect_g.xMax; x ++)
 			PostUpdateCommands.AddComponent< IsTaken >( cells[ y * gridSize.x + x ].Value );
 
-		EntityManager.RemoveComponent< DragPosition >( block );
-		EntityManager.RemoveComponent< IsDraggable >( block );
+		PostUpdateCommands.RemoveComponent< DragPosition >( block );
+		PostUpdateCommands.RemoveComponent< IsDraggable >( block );
+
+		Translation translation			= EntityManager.GetComponentData< Translation >( block );
+		EntityManager.SetComponentData( block, new Translation{ Value = new float3( translation.Value.xy, -1 ) } );
 	}
 
 

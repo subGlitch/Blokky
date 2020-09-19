@@ -44,7 +44,7 @@ public class Factory : MB_Singleton< Factory >
 		float scale							= flags.Has( Flags.IsGrid ) ? BlokkyEditor.GridScale : BlokkyEditor.UiScale;
 		bool isDraggable					= flags.Has( Flags.IsDraggable );
 		bool isGrid							= flags.Has( Flags.IsGrid );
-		int layer							= isDraggable ? 1 : 0;
+		int layer							= isDraggable ? 2 : 0;
 		float3 position3D					= (Vector3)position + Vector3.back * layer;
 
 		// Create RenderMesh for legos
