@@ -14,6 +14,7 @@ public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 
 	[SerializeField] RectTransform	_spaceForGrid;
 	[SerializeField] RectTransform	_dragStartArea;
+	[SerializeField] string			_saveFolder					= "D:/";
 
 #pragma warning restore 0649
 
@@ -45,12 +46,30 @@ public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 	public void OnSave()
 	{
 		fsSerializer serializer		= new fsSerializer();
-
 		serializer.TrySerialize( typeof( Painting ), Painting, out fsData data ).AssertSuccessWithoutWarnings();
-
 		string json					= fsJsonPrinter.CompressedJson( data );
 
+		Save( json );
+
 		Debug.Log( json );
+	}
+
+
+	void Save( string json )
+	{
+		bool success			= false;
+		int suffix				= 0;
+		while (!success && suffix < 1000)
+		{
+			string fileName		= $"Painting_{suffix}.json";
+			string path			= System.IO.Path.Combine( _saveFolder, fileName );
+			success				= !System.IO.File.Exists( path );
+
+			if (success)
+				SavingSystem.SaveText( path, json );
+
+			suffix ++;
+		}
 	}
 }
 
