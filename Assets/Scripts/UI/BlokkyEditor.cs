@@ -57,6 +57,12 @@ public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 
 	void Save( string json )
 	{
+		string folder			=
+									Application.isMobilePlatform ?
+									Application.persistentDataPath :
+									_saveFolder
+		;
+
 		bool success			= false;
 		int suffix				= 0;
 		while (!success && suffix < 1000)
