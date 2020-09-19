@@ -3,8 +3,14 @@
 
 public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 {
+	[SerializeField] RectTransform	_spaceForGrid;
+
+
 	public void Init( Vector2Int gridSize )
 	{
+		
+		_spaceForGrid.GetWorldCorners();
+
 		Grid.SetGridSize( gridSize );
 
 		Factory.Instance.CreateBlock( Vector2.zero, gridSize, false );
