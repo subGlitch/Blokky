@@ -17,9 +17,9 @@ public class Factory : MB_Singleton< Factory >
 #pragma warning restore 0649
 
 
-	public void CreateBlock( Vector2 position, Vector2Int size, float scale, bool isDraggable )
+	public void CreateBlock( Vector2 position, Vector2Int size, Flags flags = Flags.None )
 	{
-		CreateBlockParent( position, size, scale, isDraggable, out Entity parent, out RenderMesh renderMesh );
+		CreateBlockParent( position, size, flags, out Entity parent, out RenderMesh renderMesh );
 
 		CreateBlockChildren( parent, size, renderMesh );
 	}
@@ -28,12 +28,14 @@ public class Factory : MB_Singleton< Factory >
 	void CreateBlockParent(
 			Vector2				position,
 			Vector2Int			size,
-			float				scale,
-			bool				isDraggable,
+			Flags				flags,
 			out Entity			block,
 			out RenderMesh		renderMesh
 		)
 	{
+		float scale							= flags.Has( Flags.IsGrid ) ? BlokkyEditor.GridScale : BlokkyEditor.UiScale;
+		bool isDraggable					= flags.Has( Flags.IsDraggable );
+		bool isGrid							= flags.Has( Flags.IsGrid );
 		int layer							= isDraggable ? 1 : 0;
 		float3 position3D					= (Vector3)position + Vector3.back * layer;
 
@@ -53,11 +55,11 @@ public class Factory : MB_Singleton< Factory >
 		entityManager.AddComponentData( block, new Translation{ Value = position3D } );
 		entityManager.AddComponentData( block, new Scale { Value = scale } );
 		entityManager.AddComponentData( block, new BlockSize( new int2( size.x, size.y ) ) );
-		if (isDraggable)
-			entityManager.AddComponent< IsDraggable >( block );
-		else
-			entityManager.AddComponent< IsGrid >( block );
 		entityManager.AddSharedComponentData( block, renderMesh );
+
+		// Add Flag components
+		if (isDraggable)	entityManager.AddComponent< IsDraggable >( block );
+		if (isGrid)			entityManager.AddComponent< IsGrid >( block );
 	}
 
 

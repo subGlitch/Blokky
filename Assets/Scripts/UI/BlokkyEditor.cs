@@ -22,13 +22,24 @@ public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 		UiScale				= Grid.CalcScale( new Vector2Int( 5, 5 ), _dragStartArea );
 
 		// Init Grid
-		Factory.Instance.CreateBlock( _spaceForGrid.position, gridSize, GridScale, false );
+		Factory.Instance.CreateBlock(
+			_spaceForGrid.position,
+			gridSize,
+			Flags.IsGrid
+		);
 
 		// UI selected block
-		Factory.Instance.CreateBlock( DragStartArea.Instance.gameObject.transform.position, new Vector2Int( 3, 2 ), UiScale, false );
+		Factory.Instance.CreateBlock(
+			DragStartArea.Instance.gameObject.transform.position,
+			new Vector2Int( 3, 2 )
+		);
 
 		// Test
-		Factory.Instance.CreateBlock( new Vector2( 0, -4 ), new Vector2Int( 3, 2 ), UiScale, true );
+		Factory.Instance.CreateBlock(
+			new Vector2( 0, -4 ),
+			new Vector2Int( 3, 2 ),
+			Flags.IsDraggable
+		);
 	}
 }
 
