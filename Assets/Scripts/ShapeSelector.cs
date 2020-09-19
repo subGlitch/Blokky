@@ -11,21 +11,20 @@ public class ShapeSelector : MonoBehaviour
 #pragma warning restore 0649
 
 
-	void Start()
+	public void Resize()
 	{
 		CanvasScaler cs			= FindObjectOfType< CanvasScaler >();
 		RectTransform rt		= GetComponent< RectTransform >();
 		float screenWidth_w		= Camera.main.aspect * Camera.main.orthographicSize * 2;
-		float shapeWidth_w		= _size.x * BlokkyEditor.UiScale;
-		float shapeWidth		= shapeWidth_w * cs.referenceResolution.x / screenWidth_w;
-		rt.sizeDelta			= new Vector2(
-												rt.sizeDelta.x + shapeWidth,
-												rt.sizeDelta.y
-		);
-		Canvas.ForceUpdateCanvases();
+		Vector2 shapeSize_w		= (Vector2)_size * BlokkyEditor.UiScale;
+		Vector2 shapeSize		= shapeSize_w * cs.referenceResolution.x / screenWidth_w;
 
-		Debug.Log( cs.scaleFactor );
+		rt.sizeDelta			= rt.sizeDelta + shapeSize;
+	}
 
+
+	public void CreateShape()
+	{
         Factory.Instance.CreateBlock( transform.position, _size );
 	}
 }

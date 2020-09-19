@@ -19,7 +19,7 @@ public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 	{
 		Canvas.ForceUpdateCanvases();
 
-		UiScale				= Grid.CalcScale( new Vector2Int( 5, 5 ), _dragStartArea );
+		UiScale				= Grid.CalcScale( new Vector2Int( 6, 6 ), _dragStartArea );
 	}
 
 
