@@ -38,17 +38,17 @@ public class SnapToGridSystem : DragSystemBase
 				{
 					// No overlapping with grid
 					if (isDragFinish)
-						EntityManager.DestroyEntity( block );
+						DestroyHierarchy( block );
 					continue;
 				}
 
 				float2 snappedPosition			= CalcSnappedPosition( block, grid, gridScale );
 
-				if (IsOutOfGrid( block, grid, snappedPosition, gridScale ))
+				if (IsOutOfGrid( block, grid, snappedPosition, gridScale, out RectInt rect_g ))
 				{
 					// Overlapping with grid, but snapped position is not completely inside the grid
 					if (isDragFinish)
-						EntityManager.DestroyEntity( block );
+						DestroyHierarchy( block );
 					continue;
 				}
 
@@ -59,34 +59,11 @@ public class SnapToGridSystem : DragSystemBase
 				// renderMesh.material.color		= outOfGrid ? Color.red : Color.gray;
 
 				if (isDragFinish)
-					PlaceOnGrid( block, grid );
+					PlaceOnGrid( block, grid, rect_g );
 			}
 	}
 	
-	void Snap( Entity block, float2 snappedPosition, float gridScale )
-	{
-		Translation translation			= EntityManager.GetComponentData< Translation >( block );
-		translation						= new Translation{ Value = new float3( snappedPosition, translation.Value.z ) };
-		EntityManager.SetComponentData( block, translation );
-		EntityManager.SetComponentData( block, new Scale{ Value = gridScale } );
-	}
-
-
-	void PlaceOnGrid( Entity block, Entity grid )
-	{
-		DynamicBuffer< Cell > children		= EntityManager.GetBuffer< Cell >( grid );
-		// EntityManager.AddComponent< IsTaken >( children[ 0 ].Value );
-
-		PostUpdateCommands.AddComponent( children[ 0 ].Value, new Scale{ Value = .7f } );
-
-		EntityManager.RemoveComponent< DragPosition >( block );
-		EntityManager.RemoveComponent< IsDraggable >( block );
-
-		PostUpdateCommands.DestroyEntity( block );
-	}
-
-
-	bool IsOutOfGrid( Entity block, Entity grid, float2 snappedPosition, float gridScale )
+	bool IsOutOfGrid( Entity block, Entity grid, float2 snappedPosition, float gridScale, out RectInt rect_g )
 	{
 		int2 blockSize		= EntityManager.GetComponentData< BlockSize >( block ).Value;
 		int2 gridSize		= EntityManager.GetComponentData< BlockSize >( grid ).Value;
@@ -97,12 +74,67 @@ public class SnapToGridSystem : DragSystemBase
 		int2 min_g			= ProjectOnGrid( block, snappedPosition, grid, gridScale, blockMin );
 		int2 max_g			= ProjectOnGrid( block, snappedPosition, grid, gridScale, blockMax );
 
+		rect_g				= new RectInt(
+											min_g.x,
+											min_g.y,
+											max_g.x - min_g.x,
+											max_g.y - min_g.y
+		);
+
 		return
 			min_g.x < 0				||
 			min_g.y < 0				||
 			max_g.x >= gridSize.x	||
 			max_g.y >= gridSize.y
 		;
+	}
+
+
+	void Snap( Entity block, float2 snappedPosition, float gridScale )
+	{
+		Translation translation			= EntityManager.GetComponentData< Translation >( block );
+		translation						= new Translation{ Value = new float3( snappedPosition, translation.Value.z ) };
+		EntityManager.SetComponentData( block, translation );
+		EntityManager.SetComponentData( block, new Scale{ Value = gridScale } );
+	}
+
+
+	void PlaceOnGrid( Entity block, Entity grid, RectInt rect_g )
+	{
+		int2 gridSize					= EntityManager.GetComponentData< BlockSize >( grid ).Value;
+		DynamicBuffer< Cell > cells		= EntityManager.GetBuffer< Cell >( grid );
+
+		for (int y = rect_g.yMin; y <= rect_g.yMax; y ++)
+		for (int x = rect_g.xMin; x <= rect_g.xMax; x ++)
+		{
+			// EntityManager.AddComponent< IsTaken >( children[ 0 ].Value );
+
+			PostUpdateCommands.AddComponent( cells[ y * gridSize.x + x ].Value, new Scale{ Value = .7f } );
+		}
+	
+
+		EntityManager.RemoveComponent< DragPosition >( block );
+		EntityManager.RemoveComponent< IsDraggable >( block );
+
+		DestroyHierarchy( block );
+	}
+
+
+	void DestroyHierarchy( Entity entity )
+	{
+		if (EntityManager.HasComponent< Child >( entity ))
+		{
+			DynamicBuffer< Child > children		= EntityManager.GetBuffer< Child >( entity );
+
+			for (int i = 0; i < children.Length; i ++)
+			{
+				Entity child		= children[ i ].Value;
+				DestroyHierarchy( child );
+				PostUpdateCommands.DestroyEntity( child );
+			}
+		}
+
+		PostUpdateCommands.DestroyEntity( entity );
 	}
 
 
