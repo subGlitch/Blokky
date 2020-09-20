@@ -3430,7 +3430,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3178460953467786163, guid: b6f60c566579f8349b35992c6c68fe31, type: 3}
       propertyPath: m_Name
-      value: Button (1)
+      value: button Rotate
+      objectReference: {fileID: 0}
+    - target: {fileID: 5869349675112667469, guid: b6f60c566579f8349b35992c6c68fe31, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5869349675112667469, guid: b6f60c566579f8349b35992c6c68fe31, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5869349675112667469, guid: b6f60c566579f8349b35992c6c68fe31, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5869349675112667469, guid: b6f60c566579f8349b35992c6c68fe31, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 230763985}
+    - target: {fileID: 5869349675112667469, guid: b6f60c566579f8349b35992c6c68fe31, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: BlokkyEditor, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5869349675112667469, guid: b6f60c566579f8349b35992c6c68fe31, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnRotate
+      objectReference: {fileID: 0}
+    - target: {fileID: 5869349675112667469, guid: b6f60c566579f8349b35992c6c68fe31, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 6536719698655672016, guid: b6f60c566579f8349b35992c6c68fe31, type: 3}
       propertyPath: m_LocalPosition.x

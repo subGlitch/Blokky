@@ -23,7 +23,12 @@ public class SnapToGridSystem : DragSystemBase
 
 		bool isDragFinish						= Input.GetMouseButtonUp( 0 );
 
-		EntityQuery draggedQuery				= GetEntityQuery( typeof(DragPosition) );
+		var draggedQueryDesc = new EntityQueryDesc
+		{
+			None	= new ComponentType[]{ typeof(IsGrid) },
+			All		= new ComponentType[]{ typeof(DragPosition) }
+		};
+		EntityQuery draggedQuery				= GetEntityQuery( draggedQueryDesc );
 		if (draggedQuery.CalculateEntityCount() == 0)
 			return;
 

@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using FullSerializer;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
@@ -51,9 +52,29 @@ public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 	}
 
 
+	// (!) Experimental feature (!)
 	public void OnPicker()
 	=>
 		World.DefaultGameObjectInjectionWorld.GetOrCreateSystem< SnapToGridSystem >().Enabled	^= true;
+
+
+	// (!) Experimental feature (!)
+	public void OnRotate()
+	{
+		var ecb				= World.DefaultGameObjectInjectionWorld.GetOrCreateSystem< EndSimulationEntityCommandBufferSystem >().CreateCommandBuffer();
+		EntityManager entityManager				= World.DefaultGameObjectInjectionWorld.EntityManager;
+		EntityQuery gridsQuery					= entityManager.CreateEntityQuery( typeof(IsGrid ) );
+		using (NativeArray< Entity > grids		= gridsQuery.ToEntityArray( Allocator.TempJob ))
+			foreach (Entity grid in grids)
+		{
+			bool isDraggable					= entityManager.HasComponent< IsDraggable >( grid );
+
+			if (isDraggable)
+				ecb.RemoveComponent		< IsDraggable >( grid );
+			else
+				ecb.AddComponent		< IsDraggable >( grid );
+		}
+	}
 
 
 	public void OnSave()

@@ -60,7 +60,9 @@ public class DragSystem : DragSystemBase
 
 	void DragFinish()
 	=>
-		GetDraggable().ForEach( draggable =>
+		GetDraggable()
+			.WithNone< IsGrid >()							// for experimental feature of grid dragging
+			.ForEach( draggable =>
 		{
 			PostUpdateCommands.RemoveComponent< IsDraggable >( draggable );
 		});
