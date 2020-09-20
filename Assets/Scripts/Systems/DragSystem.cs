@@ -30,13 +30,12 @@ public class DragSystem : DragSystemBase
 
 		switch (state)
 		{
-			case DragState.Start:
-				DragStart();
-				break;
+			case DragState.Start:		DragStart();		break;
+			case DragState.Continue:	DragContinue();		break;
 
-			case DragState.Continue:
 			case DragState.Finish:
-				DragContinue( Utilities.Mouse_w - _mouseDragLast_w );
+				DragContinue();
+				DragFinish();
 				break;
 
 			default:
@@ -59,8 +58,18 @@ public class DragSystem : DragSystemBase
 		});
 
 
-	void DragContinue( Vector2 shift )
+	void DragFinish()
 	=>
+		GetDraggable().ForEach( draggable =>
+		{
+			PostUpdateCommands.RemoveComponent< IsDraggable >( draggable );
+		});
+
+
+	void DragContinue()
+	{
+		Vector2 shift 		= Utilities.Mouse_w - _mouseDragLast_w;
+
 		GetDraggable().ForEach(
 			(
 				Entity				draggable,
@@ -77,6 +86,7 @@ public class DragSystem : DragSystemBase
 
 			scale					= new Scale{ Value = BlokkyEditor.UiScale };
 		});
+	}
 
 
 	protected EntityQueryBuilder GetDraggable()		=> Entities.WithAll< IsDraggable >();
