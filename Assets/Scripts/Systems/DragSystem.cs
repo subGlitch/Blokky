@@ -86,7 +86,8 @@ public class DragSystem : DragSystemBase
 			float3 position			= new float3( dragPosition, translation.Value.z );
 			translation				= new Translation{ Value = position };
 
-			scale					= new Scale{ Value = BlokkyEditor.UiScale };
+			if (!EntityManager.HasComponent< IsGrid >( draggable ))
+				scale				= new Scale{ Value = BlokkyEditor.UiScale };
 		});
 	}
 

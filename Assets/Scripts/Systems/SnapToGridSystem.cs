@@ -143,6 +143,32 @@ public class SnapToGridSystem : DragSystemBase
 		if (!BlokkyEditor.Painting.blocks.TryGetValue( blockSize, out var blocks ))
 			BlokkyEditor.Painting.blocks[ blockSize ] = blocks = new List<int2>();
 		blocks.Add( blockPos );
+
+		AddChild( grid, block );
+	}
+
+
+	void AddChild( Entity parentEntity, Entity childEntity )
+	{
+		// LocalToWorld childLTW	= EntityManager.GetComponentData< LocalToWorld >( childEntity );		// child's LocalToWorld is not updated yet!!!
+		Matrix4x4 m					= Matrix4x4.identity;
+		m.SetTRS(
+			EntityManager.GetComponentData< Translation >( childEntity ).Value,
+			Quaternion.identity,
+			EntityManager.GetComponentData< Scale >( childEntity ).Value * Vector3.one
+		);
+
+		LocalToWorld childLTW		= new LocalToWorld{ Value = m };
+		LocalToWorld parentLTW		= EntityManager.GetComponentData< LocalToWorld >( parentEntity );
+ 
+        float4x4 w2p				= math.inverse( parentLTW.Value );
+        float4x4 l2p				= math.mul( w2p, childLTW.Value );
+        float3 tr					= math.transform( l2p, float3.zero );
+
+		PostUpdateCommands.AddComponent( childEntity, new LocalToParent() );		
+		PostUpdateCommands.AddComponent( childEntity, new Parent { Value = parentEntity });
+		PostUpdateCommands.SetComponent( childEntity, new Translation { Value = tr });
+		PostUpdateCommands.SetComponent( childEntity, new Scale { Value = 1 });
 	}
 
 
