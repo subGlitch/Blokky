@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using FullSerializer;
+using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
@@ -48,6 +49,11 @@ public class BlokkyEditor : MB_Singleton< BlokkyEditor >
 		_defaultShape.onClick.Invoke();
 		_defaultShape.Select();
 	}
+
+
+	public void OnPicker()
+	=>
+		World.DefaultGameObjectInjectionWorld.GetOrCreateSystem< SnapToGridSystem >().Enabled	^= true;
 
 
 	public void OnSave()
