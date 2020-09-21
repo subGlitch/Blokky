@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -38,38 +39,46 @@ public class SnapToGridSystem : DragSystemBase
 
 		using (NativeArray< Entity > blocks		= draggedQuery	.ToEntityArray( Allocator.TempJob ))
 		using (NativeArray< Entity > grids		= gridsQuery	.ToEntityArray( Allocator.TempJob ))
-			foreach (Entity block in blocks)
+		foreach (Entity block in blocks)
+		{
+			bool placementAllowed		= false;
+			Entity grid					= Entity.Null;
+			RectInt rect_g				= new RectInt();
+
+			try
 			{
 				// Find grid, overlapped by the block
-				if (FindGridOverlappedBy( block, grids, out Entity grid, out float gridScale ))
-				{
-					// Calc snappedPosition
-					float2 snappedPosition				= CalcSnappedPosition( block, grid, gridScale );
+				if (!FindGridOverlappedBy( block, grids, out grid, out float gridScale ))
+					continue;
 
-					// Check - is snapped block position is completely inside the grid
-					if (!IsOutOfGrid( block, grid, snappedPosition, gridScale, out RectInt rect_g ))
-					{
-						// Snap
-						Snap( block, snappedPosition, gridScale );
+				// Calc snappedPosition
+				float2 snappedPosition			= CalcSnappedPosition( block, grid, gridScale );
 
-						// Check - are there no other blocks on this place
-						bool isFree						= IsFree( grid, rect_g );
+				// Check - is snapped block position is completely inside the grid
+				if (IsOutOfGrid( block, grid, snappedPosition, gridScale, out rect_g ))
+					continue;
 
-						// Set Color
-						RenderMesh renderMesh			= EntityManager.GetSharedComponentData< RenderMesh >( block );
-						renderMesh.material.color		= !isFree ? Color.red : Color.gray;
+				// Snap
+				Snap( block, snappedPosition, gridScale );
 
-						if (isDragFinish && isFree)
-						{
-							PlaceOnGrid( block, grid, rect_g );
-							continue;
-						}
-					}
-				}
+				// Check - are there no other blocks on this place
+				placementAllowed				= IsFree( grid, rect_g );
 
-				if (isDragFinish)
-					Utilities.DestroyHierarchy( block );
+				// Set Color
+				RenderMesh renderMesh			= EntityManager.GetSharedComponentData< RenderMesh >( block );
+				renderMesh.material.color		= !placementAllowed ? Color.red : Color.gray;
 			}
+			finally
+			{
+				if (isDragFinish)
+				{
+					if (placementAllowed)
+						PlaceOnGrid( block, grid, rect_g );
+					else
+						Utilities.DestroyHierarchy( block );
+				}
+			}
+		}
 	}
 	
 
